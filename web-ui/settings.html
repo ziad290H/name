@@ -6,28 +6,297 @@
   <title>Settings - Monitoring Dashboard</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="stylesheet" href="css/style.css">
   <style>
-    /* Centered Layout */
-    .main {
-      max-width: 1400px;
-      margin: 0 auto;
-      padding: 30px;
+    :root {
+      /* Light Theme Variables */
+      --primary: #3b82f6;
+      --primary-light: #60a5fa;
+      --primary-dark: #2563eb;
+      --secondary: #8b5cf6;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --info: #06b6d4;
+      
+      /* Light Mode Colors */
+      --bg-primary: #ffffff;
+      --bg-secondary: #f8fafc;
+      --bg-card: #ffffff;
+      --bg-accent: #f1f5f9;
+      
+      --text-primary: #1e293b;
+      --text-secondary: #475569;
+      --text-muted: #64748b;
+      
+      --border-color: #e2e8f0;
+      --border-light: #f1f5f9;
+      --border-dark: #cbd5e1;
+      
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      --shadow-md: 0 6px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      --shadow-lg: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      
+      --sidebar-width: 280px;
+      --header-height: 70px;
+      --radius-sm: 8px;
+      --radius: 12px;
+      --radius-lg: 16px;
     }
 
-    /* Page Header */
-    .page-header {
-      text-align: center;
+    /* Dark Theme Variables */
+    .dark-mode {
+      --bg-primary: #0f172a;
+      --bg-secondary: #1e293b;
+      --bg-card: #1e293b;
+      --bg-accent: #334155;
+      
+      --text-primary: #f1f5f9;
+      --text-secondary: #cbd5e1;
+      --text-muted: #94a3b8;
+      
+      --border-color: #475569;
+      --border-light: #334155;
+      --border-dark: #64748b;
+      
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+      --shadow-md: 0 6px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
+      --shadow-lg: 0 10px 25px -5px rgba(0, 0, 0, 0.6), 0 10px 10px -5px rgba(0, 0, 0, 0.4);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.5;
+      transition: background-color 0.3s ease, color 0.3s ease;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Modern Sidebar */
+    .sidebar {
+      position: fixed;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: var(--sidebar-width);
+      background: var(--bg-card);
+      border-right: 1px solid var(--border-color);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      z-index: 1000;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
       margin-bottom: 40px;
+      padding: 12px;
+      border-radius: var(--radius);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
     }
 
-    .page-header h1 {
-      font-size: 2.2rem;
-      margin-bottom: 12px;
+    .logo::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.1), transparent);
+      transition: left 0.6s ease;
+    }
+
+    .logo:hover::before {
+      left: 100%;
+    }
+
+    .logo:hover {
+      background: var(--bg-accent);
+    }
+
+    .logo-icon {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      border-radius: 10px;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 15px;
+      color: white;
+      font-size: 1.2rem;
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    }
+
+    .logo-text {
+      font-size: 1.5rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: -0.5px;
+    }
+
+    .nav {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 16px;
+      text-decoration: none;
+      color: var(--text-secondary);
+      border-radius: var(--radius);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      font-weight: 500;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .nav-item::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.1), transparent);
+      transition: left 0.6s ease;
+    }
+
+    .nav-item:hover::before {
+      left: 100%;
+    }
+
+    .nav-item:hover {
+      background: var(--bg-accent);
+      color: var(--text-primary);
+      transform: translateX(8px);
+      box-shadow: var(--shadow);
+    }
+
+    .nav-item.active {
+      background: linear-gradient(90deg, rgba(59, 130, 246, 0.15), rgba(139, 92, 246, 0.08));
+      color: var(--primary);
+      font-weight: 600;
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+    }
+
+    .nav-icon {
+      width: 24px;
+      text-align: center;
+      font-size: 1.1rem;
+      min-width: 24px;
+    }
+
+    .sidebar-footer {
+      margin-top: auto;
+      padding-top: 20px;
+      border-top: 1px solid var(--border-color);
+    }
+
+    .user-profile {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      border-radius: var(--radius);
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .user-profile:hover {
+      background: var(--bg-accent);
+    }
+
+    .user-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      color: white;
+      font-size: 1rem;
+      box-shadow: 0 4px 8px rgba(59, 130, 246, 0.2);
+    }
+
+    .user-info h4 {
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+
+    .user-info p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    /* Modern Main Content */
+    .main {
+      margin-left: var(--sidebar-width);
+      padding: 40px;
+      transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      min-height: 100vh;
+      background: var(--bg-primary);
+    }
+
+    /* Modern Page Header */
+    .page-header {
+      text-align: center;
+      margin-bottom: 50px;
+      position: relative;
+    }
+
+    .page-header::after {
+      content: '';
+      position: absolute;
+      bottom: -20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100px;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+      border-radius: 2px;
+    }
+
+    .page-header h1 {
+      font-size: 2.5rem;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-weight: 700;
+      letter-spacing: -0.5px;
     }
 
     .page-subtitle {
@@ -35,16 +304,23 @@
       font-size: 1.1rem;
       max-width: 600px;
       margin: 0 auto;
-      line-height: 1.5;
+      line-height: 1.6;
     }
 
-    /* Centered Settings Container */
+    /* Modern Settings Container */
     .settings-container {
       display: grid;
       grid-template-columns: 280px 1fr;
       gap: 40px;
-      max-width: 1300px;
+      max-width: 1400px;
       margin: 0 auto;
+    }
+
+    @media (max-width: 1200px) {
+      .settings-container {
+        grid-template-columns: 240px 1fr;
+        gap: 30px;
+      }
     }
 
     @media (max-width: 1024px) {
@@ -52,24 +328,54 @@
         grid-template-columns: 1fr;
         gap: 30px;
       }
+      .sidebar {
+        transform: translateX(-100%);
+      }
+      .sidebar.active {
+        transform: translateX(0);
+      }
+      .main {
+        margin-left: 0;
+        padding: 30px 20px;
+      }
     }
 
-    /* Settings Sidebar - Enhanced */
+    /* Modern Settings Sidebar */
     .settings-sidebar {
       background: var(--bg-card);
-      border-radius: 16px;
+      border-radius: var(--radius-lg);
       border: 1px solid var(--border-color);
       overflow: hidden;
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+      box-shadow: var(--shadow-lg);
       height: fit-content;
       position: sticky;
-      top: 30px;
+      top: 40px;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
     }
 
     .sidebar-header {
       padding: 24px;
-      background: linear-gradient(135deg, var(--primary), #8b5cf6);
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
       color: white;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .sidebar-header::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+      animation: shimmer 3s infinite linear;
+    }
+
+    @keyframes shimmer {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
     }
 
     .sidebar-header h3 {
@@ -78,6 +384,8 @@
       display: flex;
       align-items: center;
       gap: 10px;
+      position: relative;
+      z-index: 1;
     }
 
     .settings-nav {
@@ -92,15 +400,33 @@
       color: var(--text-secondary);
       text-decoration: none;
       border-left: 4px solid transparent;
-      transition: all 0.3s ease;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       margin: 4px 8px;
       border-radius: 10px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .settings-nav-item::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.1), transparent);
+      transition: left 0.6s ease;
+    }
+
+    .settings-nav-item:hover::before {
+      left: 100%;
     }
 
     .settings-nav-item:hover {
       background: var(--bg-accent);
       color: var(--text-primary);
-      transform: translateX(5px);
+      transform: translateX(8px);
+      box-shadow: var(--shadow);
     }
 
     .settings-nav-item.active {
@@ -108,52 +434,71 @@
       color: var(--primary);
       border-left-color: var(--primary);
       font-weight: 600;
-      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.1);
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
     }
 
     .nav-icon {
       width: 22px;
       text-align: center;
       font-size: 1.1rem;
+      min-width: 22px;
     }
 
-    /* Settings Content - Enhanced */
+    /* Modern Settings Content */
     .settings-content {
       background: var(--bg-card);
-      border-radius: 16px;
+      border-radius: var(--radius-lg);
       padding: 40px;
       border: 1px solid var(--border-color);
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+      box-shadow: var(--shadow-lg);
+      max-height: calc(100vh - 200px);
+      overflow-y: auto;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
     }
 
-    /* Section Headers */
+    /* Modern Section Headers */
     .section-header {
-      margin-bottom: 35px;
+      margin-bottom: 40px;
       padding-bottom: 20px;
       border-bottom: 2px solid var(--border-color);
+      position: relative;
+    }
+
+    .section-header::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      width: 60px;
+      height: 2px;
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+      border-radius: 1px;
     }
 
     .section-header h2 {
-      font-size: 1.6rem;
-      margin-bottom: 8px;
+      font-size: 1.8rem;
+      margin-bottom: 10px;
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 15px;
       color: var(--text-primary);
+      font-weight: 700;
     }
 
     .section-header p {
       color: var(--text-muted);
-      font-size: 0.95rem;
-      line-height: 1.5;
+      font-size: 1rem;
+      line-height: 1.6;
+      max-width: 600px;
     }
 
-    /* Form Groups - Enhanced */
+    /* Modern Form Groups */
     .form-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 25px;
-      margin-bottom: 35px;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 30px;
+      margin-bottom: 40px;
     }
 
     .form-group {
@@ -164,26 +509,34 @@
     .form-label {
       display: flex;
       align-items: center;
-      gap: 8px;
-      margin-bottom: 10px;
+      gap: 10px;
+      margin-bottom: 12px;
       font-weight: 600;
       color: var(--text-primary);
-      font-size: 0.95rem;
+      font-size: 1rem;
     }
 
     .form-label i {
       color: var(--primary);
+      width: 20px;
+      text-align: center;
     }
 
     .form-control {
       width: 100%;
-      padding: 14px 18px;
+      padding: 16px 20px;
       background: var(--bg-accent);
       border: 2px solid var(--border-color);
-      border-radius: 10px;
+      border-radius: 12px;
       color: var(--text-primary);
-      font-size: 0.95rem;
-      transition: all 0.3s ease;
+      font-size: 1rem;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      font-family: 'Inter', sans-serif;
+    }
+
+    .form-control:hover {
+      border-color: var(--primary-light);
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.1);
     }
 
     .form-control:focus {
@@ -191,32 +544,59 @@
       border-color: var(--primary);
       box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
       background: var(--bg-secondary);
+      transform: translateY(-2px);
     }
 
-    /* Toggle Switches - Enhanced */
+    select.form-control {
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%2364748b' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 20px center;
+      background-size: 14px;
+      padding-right: 50px;
+      cursor: pointer;
+    }
+
+    /* Modern Toggle Section */
     .toggle-section {
       background: var(--bg-accent);
-      border-radius: 12px;
-      padding: 25px;
-      margin-bottom: 30px;
+      border-radius: 16px;
+      padding: 30px;
+      margin-bottom: 35px;
       border: 1px solid var(--border-color);
+      box-shadow: var(--shadow);
+      transition: all 0.3s ease;
+    }
+
+    .toggle-section:hover {
+      box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
     }
 
     .toggle-section h3 {
-      font-size: 1.2rem;
-      margin-bottom: 20px;
+      font-size: 1.3rem;
+      margin-bottom: 25px;
       color: var(--text-primary);
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
+      font-weight: 700;
     }
 
     .toggle-item {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 18px 0;
+      padding: 20px 0;
       border-bottom: 1px solid var(--border-color);
+      transition: all 0.3s ease;
+    }
+
+    .toggle-item:hover {
+      background: rgba(59, 130, 246, 0.03);
+      padding-left: 10px;
+      padding-right: 10px;
+      border-radius: 8px;
     }
 
     .toggle-item:last-child {
@@ -228,24 +608,28 @@
     }
 
     .toggle-info h4 {
-      font-size: 1rem;
+      font-size: 1.05rem;
       font-weight: 600;
-      margin-bottom: 5px;
+      margin-bottom: 6px;
       color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
 
     .toggle-info p {
-      font-size: 0.85rem;
+      font-size: 0.9rem;
       color: var(--text-muted);
-      line-height: 1.4;
+      line-height: 1.5;
     }
 
-    /* Enhanced Toggle Switch */
+    /* Modern Toggle Switch */
     .toggle-switch {
       position: relative;
-      width: 62px;
-      height: 34px;
+      width: 68px;
+      height: 36px;
       margin-left: 20px;
+      flex-shrink: 0;
     }
 
     .toggle-switch input {
@@ -262,99 +646,216 @@
       right: 0;
       bottom: 0;
       background: linear-gradient(135deg, #64748b, #94a3b8);
-      transition: all 0.4s ease;
-      border-radius: 34px;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      border-radius: 36px;
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
     }
 
     .toggle-slider:before {
       position: absolute;
       content: "";
-      height: 26px;
-      width: 26px;
+      height: 28px;
+      width: 28px;
       left: 4px;
       bottom: 4px;
       background: white;
-      transition: all 0.4s ease;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
       border-radius: 50%;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
     }
 
     input:checked + .toggle-slider {
-      background: linear-gradient(135deg, var(--primary), #8b5cf6);
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
     }
 
     input:checked + .toggle-slider:before {
-      transform: translateX(28px);
+      transform: translateX(32px);
     }
 
-    /* Integrations Grid - Enhanced */
-    .integrations-grid {
+    /* Modern Notification Channels */
+    .notification-channels {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      gap: 20px;
-      margin-top: 25px;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 25px;
+      margin-top: 30px;
     }
 
-    .integration-card {
+    .channel-card {
       background: var(--bg-accent);
-      border-radius: 12px;
-      padding: 25px;
+      border-radius: 16px;
+      padding: 30px;
       border: 2px solid var(--border-color);
-      transition: all 0.3s ease;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       text-align: center;
       position: relative;
       overflow: hidden;
     }
 
-    .integration-card:hover {
-      transform: translateY(-5px);
+    .channel-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+      transform: scaleX(0);
+      transition: transform 0.3s ease;
+    }
+
+    .channel-card:hover::before {
+      transform: scaleX(1);
+    }
+
+    .channel-card:hover {
       border-color: var(--primary);
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      transform: translateY(-8px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .channel-icon {
+      width: 70px;
+      height: 70px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      margin: 0 auto 24px;
+      color: white;
+      box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
+      transition: all 0.3s ease;
+    }
+
+    .channel-card:hover .channel-icon {
+      transform: scale(1.1) rotate(5deg);
+    }
+
+    .channel-name {
+      font-weight: 700;
+      margin-bottom: 12px;
+      font-size: 1.1rem;
+      color: var(--text-primary);
+    }
+
+    .channel-desc {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin-bottom: 24px;
+      line-height: 1.5;
+    }
+
+    /* Modern Integrations Grid */
+    .integrations-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 25px;
+      margin-top: 30px;
+    }
+
+    .integration-card {
+      background: var(--bg-accent);
+      border-radius: 16px;
+      padding: 30px;
+      border: 2px solid var(--border-color);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .integration-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+      transform: scaleX(0);
+      transition: transform 0.3s ease;
+    }
+
+    .integration-card:hover::before {
+      transform: scaleX(1);
+    }
+
+    .integration-card:hover {
+      transform: translateY(-8px);
+      box-shadow: var(--shadow-lg);
     }
 
     .integration-card.connected {
       border-color: var(--success);
     }
 
+    .integration-card.connected:hover {
+      border-color: var(--success);
+      box-shadow: 0 10px 30px rgba(16, 185, 129, 0.2);
+    }
+
     .integration-card.disconnected {
       border-color: var(--danger);
     }
 
+    .integration-card.disconnected:hover {
+      border-color: var(--danger);
+      box-shadow: 0 10px 30px rgba(239, 68, 68, 0.2);
+    }
+
     .integration-icon {
-      width: 60px;
-      height: 60px;
-      border-radius: 12px;
-      background: linear-gradient(135deg, var(--primary), #8b5cf6);
+      width: 70px;
+      height: 70px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.8rem;
-      margin: 0 auto 18px;
+      font-size: 2rem;
+      margin: 0 auto 24px;
       color: white;
+      box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
+      transition: all 0.3s ease;
+    }
+
+    .integration-card:hover .integration-icon {
+      transform: scale(1.1);
     }
 
     .integration-card.connected .integration-icon {
       background: linear-gradient(135deg, var(--success), #10b981);
+      box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
     }
 
     .integration-card.disconnected .integration-icon {
       background: linear-gradient(135deg, var(--danger), #ef4444);
+      box-shadow: 0 8px 20px rgba(239, 68, 68, 0.3);
     }
 
     .integration-name {
-      font-weight: 600;
-      margin-bottom: 10px;
-      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+      font-size: 1.1rem;
       color: var(--text-primary);
     }
 
+    .integration-desc {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin-bottom: 20px;
+      line-height: 1.5;
+    }
+
     .integration-status {
-      font-size: 0.8rem;
-      padding: 6px 14px;
+      font-size: 0.85rem;
+      padding: 8px 16px;
       border-radius: 20px;
       display: inline-block;
-      font-weight: 600;
+      font-weight: 700;
       letter-spacing: 0.5px;
+      transition: all 0.3s ease;
     }
 
     .status-connected {
@@ -362,51 +863,74 @@
       color: var(--success);
     }
 
+    .integration-card:hover .status-connected {
+      background: rgba(16, 185, 129, 0.3);
+      transform: scale(1.05);
+    }
+
     .status-disconnected {
       background: rgba(239, 68, 68, 0.2);
       color: var(--danger);
     }
 
-    /* Team Members - Enhanced */
+    .integration-card:hover .status-disconnected {
+      background: rgba(239, 68, 68, 0.3);
+      transform: scale(1.05);
+    }
+
+    /* Modern Team Grid */
     .team-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-      gap: 20px;
-      margin-top: 25px;
+      grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+      gap: 25px;
+      margin-top: 30px;
+    }
+
+    @media (max-width: 768px) {
+      .team-grid {
+        grid-template-columns: 1fr;
+      }
     }
 
     .team-card {
       background: var(--bg-accent);
-      border-radius: 12px;
-      padding: 20px;
+      border-radius: 16px;
+      padding: 25px;
       border: 2px solid var(--border-color);
-      transition: all 0.3s ease;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     .team-card:hover {
       border-color: var(--primary);
-      transform: translateY(-3px);
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+      transform: translateY(-8px);
+      box-shadow: var(--shadow-lg);
     }
 
     .team-header {
       display: flex;
       align-items: center;
-      gap: 15px;
-      margin-bottom: 15px;
+      gap: 20px;
+      margin-bottom: 20px;
     }
 
     .member-avatar {
-      width: 50px;
-      height: 50px;
+      width: 60px;
+      height: 60px;
       border-radius: 50%;
-      background: linear-gradient(135deg, var(--primary), #8b5cf6);
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
       display: flex;
       align-items: center;
       justify-content: center;
       font-weight: 700;
-      font-size: 1.2rem;
+      font-size: 1.4rem;
       color: white;
+      box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
+      transition: all 0.3s ease;
+    }
+
+    .team-card:hover .member-avatar {
+      transform: scale(1.1);
+      box-shadow: 0 12px 25px rgba(59, 130, 246, 0.4);
     }
 
     .member-info {
@@ -414,24 +938,38 @@
     }
 
     .member-name {
-      font-weight: 600;
-      font-size: 1rem;
+      font-weight: 700;
+      font-size: 1.1rem;
       color: var(--text-primary);
+      margin-bottom: 4px;
+    }
+
+    .member-email {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-bottom: 6px;
     }
 
     .member-role {
-      font-size: 0.85rem;
-      color: var(--text-muted);
-      margin-top: 3px;
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
 
     .member-badge {
       display: inline-block;
-      padding: 4px 10px;
-      font-size: 0.75rem;
-      font-weight: 600;
+      padding: 6px 14px;
+      font-size: 0.8rem;
+      font-weight: 700;
       border-radius: 12px;
-      margin-top: 5px;
+      margin-top: 8px;
+      transition: all 0.3s ease;
+    }
+
+    .team-card:hover .member-badge {
+      transform: translateY(-2px);
     }
 
     .badge-admin {
@@ -449,121 +987,162 @@
       color: var(--success);
     }
 
+    .badge-viewer {
+      background: rgba(148, 163, 184, 0.2);
+      color: var(--text-muted);
+    }
+
     .team-actions {
       display: flex;
-      gap: 10px;
-      margin-top: 15px;
-      padding-top: 15px;
+      gap: 12px;
+      margin-top: 20px;
+      padding-top: 20px;
       border-top: 1px solid var(--border-color);
     }
 
     .action-btn {
       flex: 1;
-      padding: 10px;
-      border-radius: 8px;
-      border: 1px solid var(--border-color);
+      padding: 12px;
+      border-radius: 10px;
+      border: 2px solid var(--border-color);
       background: var(--bg-card);
       color: var(--text-primary);
-      font-size: 0.85rem;
-      font-weight: 500;
+      font-size: 0.9rem;
+      font-weight: 600;
       cursor: pointer;
-      transition: all 0.3s ease;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 6px;
+      gap: 8px;
     }
 
     .action-btn:hover {
       background: var(--primary);
       color: white;
       border-color: var(--primary);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 15px rgba(59, 130, 246, 0.3);
     }
 
-    /* API Section - Enhanced */
+    /* Modern API Section */
     .api-card {
       background: var(--bg-accent);
-      border-radius: 12px;
-      padding: 25px;
+      border-radius: 16px;
+      padding: 30px;
       border: 2px solid var(--primary);
-      margin-top: 20px;
+      margin-top: 25px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .api-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
     }
 
     .api-key-container {
       background: var(--bg-secondary);
-      border-radius: 10px;
-      padding: 20px;
-      margin: 20px 0;
+      border-radius: 12px;
+      padding: 25px;
+      margin: 25px 0;
       position: relative;
+      border: 1px solid var(--border-color);
     }
 
     .api-key {
       font-family: 'SF Mono', 'Roboto Mono', monospace;
-      font-size: 0.9rem;
+      font-size: 0.95rem;
       color: var(--text-primary);
       word-break: break-all;
-      padding: 15px;
-      background: rgba(0, 0, 0, 0.2);
-      border-radius: 8px;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.1);
+      border-radius: 10px;
       border-left: 4px solid var(--success);
+      line-height: 1.6;
     }
 
     .copy-btn {
       position: absolute;
-      top: 20px;
-      right: 20px;
-      background: var(--primary);
+      top: 25px;
+      right: 25px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
       color: white;
       border: none;
-      border-radius: 8px;
-      padding: 10px 20px;
-      font-size: 0.85rem;
-      font-weight: 600;
+      border-radius: 10px;
+      padding: 12px 24px;
+      font-size: 0.9rem;
+      font-weight: 700;
       cursor: pointer;
-      transition: all 0.3s ease;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
+      box-shadow: 0 6px 15px rgba(59, 130, 246, 0.3);
     }
 
     .copy-btn:hover {
-      background: #2563eb;
+      background: linear-gradient(135deg, var(--primary-dark), var(--secondary));
       transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
     }
 
     .api-actions {
       display: flex;
-      gap: 12px;
-      margin-top: 25px;
+      gap: 15px;
+      margin-top: 30px;
       flex-wrap: wrap;
     }
 
-    /* Danger Zone - Enhanced */
+    /* Modern Danger Zone */
     .danger-zone {
       background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(220, 38, 38, 0.05));
       border: 2px solid var(--danger);
-      border-radius: 16px;
-      padding: 35px;
-      margin-top: 40px;
+      border-radius: 20px;
+      padding: 40px;
+      margin-top: 50px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .danger-zone::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--danger), #dc2626);
     }
 
     .danger-header {
       display: flex;
       align-items: center;
-      gap: 15px;
-      margin-bottom: 20px;
+      gap: 20px;
+      margin-bottom: 25px;
     }
 
     .danger-header h3 {
       color: var(--danger);
-      font-size: 1.4rem;
+      font-size: 1.6rem;
       margin: 0;
+      font-weight: 700;
     }
 
     .danger-item {
-      margin-bottom: 25px;
-      padding-bottom: 25px;
+      margin-bottom: 30px;
+      padding-bottom: 30px;
       border-bottom: 1px solid rgba(239, 68, 68, 0.3);
+      transition: all 0.3s ease;
+    }
+
+    .danger-item:hover {
+      padding-left: 10px;
     }
 
     .danger-item:last-child {
@@ -573,50 +1152,70 @@
     }
 
     .danger-item h4 {
-      font-size: 1.1rem;
-      margin-bottom: 10px;
+      font-size: 1.2rem;
+      margin-bottom: 12px;
       color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
 
     .danger-item p {
       color: var(--text-muted);
-      font-size: 0.9rem;
-      margin-bottom: 15px;
-      line-height: 1.5;
+      font-size: 0.95rem;
+      margin-bottom: 20px;
+      line-height: 1.6;
     }
 
-    /* Action Buttons */
+    /* Modern Action Buttons */
     .action-buttons {
       display: flex;
-      gap: 15px;
+      gap: 20px;
       justify-content: flex-end;
-      margin-top: 40px;
+      margin-top: 50px;
       padding-top: 30px;
       border-top: 2px solid var(--border-color);
     }
 
     .btn {
-      padding: 14px 28px;
-      border-radius: 10px;
-      font-weight: 600;
-      font-size: 0.95rem;
+      padding: 16px 32px;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 1rem;
       cursor: pointer;
-      transition: all 0.3s ease;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       border: none;
       display: inline-flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: left 0.6s ease;
+    }
+
+    .btn:hover::before {
+      left: 100%;
     }
 
     .btn-primary {
-      background: linear-gradient(135deg, var(--primary), #8b5cf6);
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
       color: white;
-      box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+      box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
     }
 
     .btn-primary:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+      transform: translateY(-4px);
+      box-shadow: 0 12px 25px rgba(59, 130, 246, 0.4);
     }
 
     .btn-secondary {
@@ -627,35 +1226,235 @@
 
     .btn-secondary:hover {
       background: var(--border-color);
-      transform: translateY(-2px);
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-md);
     }
 
     .btn-danger {
       background: linear-gradient(135deg, var(--danger), #dc2626);
       color: white;
-      box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+      box-shadow: 0 8px 20px rgba(239, 68, 68, 0.3);
     }
 
     .btn-danger:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+      transform: translateY(-4px);
+      box-shadow: 0 12px 25px rgba(239, 68, 68, 0.4);
     }
 
     .btn-warning {
       background: linear-gradient(135deg, var(--warning), #d97706);
       color: white;
-      box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
+      box-shadow: 0 8px 20px rgba(245, 158, 11, 0.3);
     }
 
     .btn-warning:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(245, 158, 11, 0.4);
+      transform: translateY(-4px);
+      box-shadow: 0 12px 25px rgba(245, 158, 11, 0.4);
+    }
+
+    .btn-success {
+      background: linear-gradient(135deg, var(--success), #059669);
+      color: white;
+      box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
+    }
+
+    .btn-success:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 25px rgba(16, 185, 129, 0.4);
+    }
+
+    /* Modern Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 2000;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 0.3s ease;
+      backdrop-filter: blur(5px);
+      -webkit-backdrop-filter: blur(5px);
+    }
+
+    .modal-content {
+      background: var(--bg-card);
+      border-radius: var(--radius-lg);
+      padding: 40px;
+      max-width: 500px;
+      width: 90%;
+      box-shadow: var(--shadow-lg);
+      border: 1px solid var(--border-color);
+      transform: translateY(-20px);
+      opacity: 0;
+      animation: modalSlideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .modal-content::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--danger), #dc2626);
+    }
+
+    @keyframes modalSlideIn {
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .modal-header {
+      margin-bottom: 25px;
+      padding-bottom: 20px;
+      border-bottom: 2px solid var(--border-color);
+    }
+
+    .modal-body {
+      margin-bottom: 30px;
+    }
+
+    .modal-footer {
+      display: flex;
+      gap: 15px;
+      justify-content: flex-end;
+    }
+
+    /* Modern Hamburger Menu */
+    .menu-toggle {
+      display: none;
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      z-index: 2001;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      width: 56px;
+      height: 56px;
+      border-radius: 12px;
+      border: none;
+      cursor: pointer;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      box-shadow: var(--shadow-lg);
+      transition: all 0.3s ease;
+    }
+
+    .menu-toggle:hover {
+      transform: scale(1.1);
+      box-shadow: 0 12px 25px rgba(59, 130, 246, 0.4);
+    }
+
+    @media (max-width: 1024px) {
+      .menu-toggle {
+        display: flex;
+      }
+    }
+
+    /* Custom Scrollbar */
+    .settings-content::-webkit-scrollbar {
+      width: 10px;
+    }
+
+    .settings-content::-webkit-scrollbar-track {
+      background: var(--bg-accent);
+      border-radius: 5px;
+    }
+
+    .settings-content::-webkit-scrollbar-thumb {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      border-radius: 5px;
+      border: 2px solid var(--bg-accent);
+    }
+
+    .settings-content::-webkit-scrollbar-thumb:hover {
+      background: linear-gradient(135deg, var(--primary-dark), var(--secondary));
+    }
+
+    /* Animations */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .settings-section {
+      animation: fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+
+    /* Gradient Text */
+    .gradient-text {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* Loading Skeleton */
+    .skeleton {
+      background: linear-gradient(90deg, var(--bg-accent) 25%, var(--border-color) 50%, var(--bg-accent) 75%);
+      background-size: 200% 100%;
+      animation: loading 1.5s infinite;
+      border-radius: var(--radius);
+    }
+
+    @keyframes loading {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    /* Theme Toggle Button */
+    .theme-toggle-section {
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border-color);
+    }
+
+    #themeToggleBtn {
+      width: 100%;
+      margin-top: 10px;
+      justify-content: center;
+    }
+
+    /* Badge Styles */
+    .badge {
+      display: inline-block;
+      padding: 6px 14px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      border-radius: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* Card Hover Effects */
+    .hover-lift {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .hover-lift:hover {
+      transform: translateY(-8px);
+      box-shadow: var(--shadow-lg);
     }
 
     /* Responsive Design */
     @media (max-width: 768px) {
       .main {
-        padding: 20px;
+        padding: 25px 20px;
       }
       
       .settings-content {
@@ -664,6 +1463,7 @@
       
       .form-grid {
         grid-template-columns: 1fr;
+        gap: 20px;
       }
       
       .team-grid {
@@ -671,7 +1471,11 @@
       }
       
       .integrations-grid {
-        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      }
+      
+      .notification-channels {
+        grid-template-columns: 1fr;
       }
       
       .api-actions {
@@ -686,56 +1490,42 @@
       .action-buttons {
         flex-direction: column;
       }
-    }
-
-    /* Animation for sections */
-    @keyframes fadeInUp {
-      from {
-        opacity: 0;
-        transform: translateY(20px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
+      
+      .page-header h1 {
+        font-size: 2rem;
+        flex-direction: column;
+        gap: 10px;
       }
     }
 
-    .settings-section {
-      animation: fadeInUp 0.5s ease-out;
+    /* Dark mode improvements */
+    .dark-mode .form-control {
+      background: rgba(255, 255, 255, 0.05);
     }
 
-    /* Smooth transitions */
-    .settings-nav-item,
-    .toggle-item,
-    .integration-card,
-    .team-card,
-    .btn {
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    .dark-mode .form-control:focus {
+      background: rgba(255, 255, 255, 0.08);
     }
 
-    /* Custom scrollbar */
-    .settings-content::-webkit-scrollbar {
-      width: 8px;
+    .dark-mode .toggle-section {
+      background: rgba(255, 255, 255, 0.05);
     }
 
-    .settings-content::-webkit-scrollbar-track {
-      background: var(--bg-accent);
-      border-radius: 4px;
-    }
-
-    .settings-content::-webkit-scrollbar-thumb {
-      background: var(--primary);
-      border-radius: 4px;
-    }
-
-    .settings-content::-webkit-scrollbar-thumb:hover {
-      background: #2563eb;
+    .dark-mode .integration-card,
+    .dark-mode .channel-card,
+    .dark-mode .team-card {
+      background: rgba(255, 255, 255, 0.05);
     }
   </style>
 </head>
 <body>
+  <!-- Hamburger Menu (Mobile) -->
+  <button class="menu-toggle" id="menuToggle">
+    <i class="fas fa-bars"></i>
+  </button>
+
   <!-- Sidebar Navigation -->
-  <div class="sidebar">
+  <div class="sidebar" id="sidebar">
     <a href="index.html" class="logo">
       <div class="logo-icon">
         <i class="fas fa-shield-alt"></i>
@@ -774,6 +1564,12 @@
           <p>Administrator</p>
         </div>
       </div>
+      <div class="theme-toggle-section">
+        <button class="btn btn-secondary" id="themeToggleBtn">
+          <i class="fas fa-moon"></i>
+          <span>Toggle Theme</span>
+        </button>
+      </div>
     </div>
   </div>
 
@@ -782,7 +1578,7 @@
     <!-- Page Header -->
     <div class="page-header">
       <h1>
-        <i class="fas fa-cog" style="background: linear-gradient(135deg, #94a3b8, #64748b); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"></i>
+        <i class="fas fa-cog gradient-text"></i>
         Settings & Configuration
       </h1>
       <p class="page-subtitle">Configure your monitoring dashboard, manage integrations, and customize preferences</p>
@@ -893,18 +1689,18 @@
             
             <div class="toggle-item">
               <div class="toggle-info">
-                <h4>Dark Mode</h4>
+                <h4><i class="fas fa-moon"></i> Dark Mode</h4>
                 <p>Use dark theme for better viewing in low-light conditions</p>
               </div>
               <label class="toggle-switch">
-                <input type="checkbox" id="darkModeToggle" checked>
+                <input type="checkbox" id="darkModeToggle">
                 <span class="toggle-slider"></span>
               </label>
             </div>
             
             <div class="toggle-item">
               <div class="toggle-info">
-                <h4>Compact View</h4>
+                <h4><i class="fas fa-compress-alt"></i> Compact View</h4>
                 <p>Use compact layout for tables and lists to show more data</p>
               </div>
               <label class="toggle-switch">
@@ -915,7 +1711,7 @@
             
             <div class="toggle-item">
               <div class="toggle-info">
-                <h4>Show Charts</h4>
+                <h4><i class="fas fa-chart-bar"></i> Show Charts</h4>
                 <p>Display interactive charts in dashboard overview</p>
               </div>
               <label class="toggle-switch">
@@ -926,7 +1722,7 @@
             
             <div class="toggle-item">
               <div class="toggle-info">
-                <h4>Animations</h4>
+                <h4><i class="fas fa-play-circle"></i> Animations</h4>
                 <p>Enable smooth animations and transitions</p>
               </div>
               <label class="toggle-switch">
@@ -937,7 +1733,7 @@
             
             <div class="toggle-item">
               <div class="toggle-info">
-                <h4>Sound Notifications</h4>
+                <h4><i class="fas fa-volume-up"></i> Sound Notifications</h4>
                 <p>Play sounds for new incidents and alerts</p>
               </div>
               <label class="toggle-switch">
@@ -948,47 +1744,408 @@
           </div>
         </div>
 
-        <!-- Notifications Settings (Hidden by default) -->
+        <!-- Notifications Settings -->
         <div id="notificationsSection" class="settings-section" style="display: none;">
           <div class="section-header">
             <h2><i class="fas fa-bell" style="color: var(--warning);"></i> Notification Settings</h2>
             <p>Configure how and when you receive alerts and notifications</p>
           </div>
           
-          <!-- Content would be here -->
+          <div class="toggle-section">
+            <h3><i class="fas fa-envelope" style="color: var(--primary);"></i> Notification Preferences</h3>
+            
+            <div class="toggle-item">
+              <div class="toggle-info">
+                <h4><i class="fas fa-envelope"></i> Email Notifications</h4>
+                <p>Receive notifications via email for critical incidents</p>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" id="emailNotifications" checked>
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+            
+            <div class="toggle-item">
+              <div class="toggle-info">
+                <h4><i class="fas fa-mobile-alt"></i> Push Notifications</h4>
+                <p>Get browser push notifications for real-time alerts</p>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" id="pushNotifications">
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+            
+            <div class="toggle-item">
+              <div class="toggle-info">
+                <h4><i class="fas fa-sms"></i> SMS Alerts</h4>
+                <p>Receive SMS messages for urgent incidents</p>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" id="smsAlerts">
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+            
+            <div class="toggle-item">
+              <div class="toggle-info">
+                <h4><i class="fas fa-desktop"></i> Desktop Notifications</h4>
+                <p>Show desktop notifications when dashboard is not active</p>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" id="desktopNotifications" checked>
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">
+                <i class="fas fa-envelope"></i>
+                Email Address
+              </label>
+              <input type="email" class="form-control" value="admin@company.com" id="notificationEmail" placeholder="Enter email address">
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label">
+                <i class="fas fa-phone"></i>
+                Phone Number
+              </label>
+              <input type="tel" class="form-control" value="+1 (555) 123-4567" id="notificationPhone" placeholder="Enter phone number">
+            </div>
+          </div>
+
+          <div class="notification-channels">
+            <div class="channel-card">
+              <div class="channel-icon">
+                <i class="fas fa-mobile-alt"></i>
+              </div>
+              <div class="channel-name">Mobile App</div>
+              <div class="channel-desc">Push notifications to mobile devices</div>
+              <button class="btn btn-primary" style="padding: 10px 24px; font-size: 0.9rem;">
+                <i class="fas fa-link"></i> Connect
+              </button>
+            </div>
+            
+            <div class="channel-card">
+              <div class="channel-icon">
+                <i class="fab fa-slack"></i>
+              </div>
+              <div class="channel-name">Slack</div>
+              <div class="channel-desc">Send alerts to Slack channels</div>
+              <button class="btn btn-success" style="padding: 10px 24px; font-size: 0.9rem;">
+                <i class="fas fa-check"></i> Connected
+              </button>
+            </div>
+            
+            <div class="channel-card">
+              <div class="channel-icon">
+                <i class="fab fa-microsoft"></i>
+              </div>
+              <div class="channel-name">Teams</div>
+              <div class="channel-desc">Microsoft Teams integration</div>
+              <button class="btn btn-secondary" style="padding: 10px 24px; font-size: 0.9rem;">
+                <i class="fas fa-link"></i> Connect
+              </button>
+            </div>
+          </div>
         </div>
 
-        <!-- Integrations Settings (Hidden by default) -->
+        <!-- Integrations Settings -->
         <div id="integrationsSection" class="settings-section" style="display: none;">
           <div class="section-header">
             <h2><i class="fas fa-plug" style="color: var(--success);"></i> Integrations</h2>
             <p>Connect your monitoring dashboard with other services and tools</p>
           </div>
           
-          <!-- Content would be here -->
+          <div class="integrations-grid">
+            <div class="integration-card connected">
+              <div class="integration-icon">
+                <i class="fab fa-github"></i>
+              </div>
+              <div class="integration-name">GitHub</div>
+              <div class="integration-desc">Connect repositories for deployment tracking</div>
+              <div class="integration-status status-connected">Connected</div>
+            </div>
+            
+            <div class="integration-card disconnected">
+              <div class="integration-icon">
+                <i class="fab fa-jenkins"></i>
+              </div>
+              <div class="integration-name">Jenkins</div>
+              <div class="integration-desc">CI/CD pipeline monitoring</div>
+              <div class="integration-status status-disconnected">Disconnected</div>
+            </div>
+            
+            <div class="integration-card connected">
+              <div class="integration-icon">
+                <i class="fab fa-aws"></i>
+              </div>
+              <div class="integration-name">AWS CloudWatch</div>
+              <div class="integration-desc">Cloud infrastructure monitoring</div>
+              <div class="integration-status status-connected">Connected</div>
+            </div>
+            
+            <div class="integration-card connected">
+              <div class="integration-icon">
+                <i class="fas fa-database"></i>
+              </div>
+              <div class="integration-name">Datadog</div>
+              <div class="integration-desc">Application performance monitoring</div>
+              <div class="integration-status status-connected">Connected</div>
+            </div>
+            
+            <div class="integration-card disconnected">
+              <div class="integration-icon">
+                <i class="fab fa-splunk"></i>
+              </div>
+              <div class="integration-name">Splunk</div>
+              <div class="integration-desc">Log management and analysis</div>
+              <div class="integration-status status-disconnected">Disconnected</div>
+            </div>
+            
+            <div class="integration-card connected">
+              <div class="integration-icon">
+                <i class="fab fa-pagerduty"></i>
+              </div>
+              <div class="integration-name">PagerDuty</div>
+              <div class="integration-desc">On-call scheduling and alerting</div>
+              <div class="integration-status status-connected">Connected</div>
+            </div>
+          </div>
+
+          <div class="api-card">
+            <h3 style="margin-bottom: 20px; color: var(--primary);">
+              <i class="fas fa-plus-circle"></i> Add New Integration
+            </h3>
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label">
+                  <i class="fas fa-plug"></i>
+                  Integration Type
+                </label>
+                <select class="form-control" id="integrationType">
+                  <option value="">Select integration...</option>
+                  <option value="slack">Slack</option>
+                  <option value="teams">Microsoft Teams</option>
+                  <option value="discord">Discord</option>
+                  <option value="webhook">Custom Webhook</option>
+                </select>
+              </div>
+              
+              <div class="form-group">
+                <label class="form-label">
+                  <i class="fas fa-link"></i>
+                  Webhook URL
+                </label>
+                <input type="text" class="form-control" id="webhookUrl" placeholder="https://hooks.slack.com/services/...">
+              </div>
+            </div>
+            <button class="btn btn-primary">
+              <i class="fas fa-plus"></i> Add Integration
+            </button>
+          </div>
         </div>
 
-        <!-- Team Settings (Hidden by default) -->
+        <!-- Team Settings -->
         <div id="teamSection" class="settings-section" style="display: none;">
           <div class="section-header">
             <h2><i class="fas fa-users" style="color: var(--primary);"></i> Team Management</h2>
             <p>Manage team members, roles, and permissions</p>
           </div>
           
-          <!-- Content would be here -->
+          <div class="team-grid">
+            <div class="team-card">
+              <div class="team-header">
+                <div class="member-avatar">JD</div>
+                <div class="member-info">
+                  <div class="member-name">John Doe</div>
+                  <div class="member-email">john.doe@company.com</div>
+                  <div class="member-role"><i class="fas fa-shield-alt"></i> Administrator</div>
+                  <span class="member-badge badge-admin">Admin</span>
+                </div>
+              </div>
+              <div class="team-actions">
+                <button class="action-btn">
+                  <i class="fas fa-edit"></i> Edit
+                </button>
+                <button class="action-btn">
+                  <i class="fas fa-envelope"></i> Message
+                </button>
+              </div>
+            </div>
+            
+            <div class="team-card">
+              <div class="team-header">
+                <div class="member-avatar">JS</div>
+                <div class="member-info">
+                  <div class="member-name">Jane Smith</div>
+                  <div class="member-email">jane.smith@company.com</div>
+                  <div class="member-role"><i class="fas fa-code"></i> Senior Developer</div>
+                  <span class="member-badge badge-developer">Developer</span>
+                </div>
+              </div>
+              <div class="team-actions">
+                <button class="action-btn">
+                  <i class="fas fa-edit"></i> Edit
+                </button>
+                <button class="action-btn">
+                  <i class="fas fa-envelope"></i> Message
+                </button>
+              </div>
+            </div>
+            
+            <div class="team-card">
+              <div class="team-header">
+                <div class="member-avatar">MB</div>
+                <div class="member-info">
+                  <div class="member-name">Mike Brown</div>
+                  <div class="member-email">mike.brown@company.com</div>
+                  <div class="member-role"><i class="fas fa-server"></i> DevOps Engineer</div>
+                  <span class="member-badge badge-ops">Operations</span>
+                </div>
+              </div>
+              <div class="team-actions">
+                <button class="action-btn">
+                  <i class="fas fa-edit"></i> Edit
+                </button>
+                <button class="action-btn">
+                  <i class="fas fa-envelope"></i> Message
+                </button>
+              </div>
+            </div>
+            
+            <div class="team-card">
+              <div class="team-header">
+                <div class="member-avatar">SA</div>
+                <div class="member-info">
+                  <div class="member-name">Sarah Adams</div>
+                  <div class="member-email">sarah.adams@company.com</div>
+                  <div class="member-role"><i class="fas fa-bug"></i> QA Engineer</div>
+                  <span class="member-badge badge-viewer">Viewer</span>
+                </div>
+              </div>
+              <div class="team-actions">
+                <button class="action-btn">
+                  <i class="fas fa-edit"></i> Edit
+                </button>
+                <button class="action-btn">
+                  <i class="fas fa-envelope"></i> Message
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="api-card">
+            <h3 style="margin-bottom: 20px; color: var(--primary);">
+              <i class="fas fa-user-plus"></i> Invite Team Member
+            </h3>
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label">
+                  <i class="fas fa-user"></i>
+                  Email Address
+                </label>
+                <input type="email" class="form-control" id="inviteEmail" placeholder="email@company.com">
+              </div>
+              
+              <div class="form-group">
+                <label class="form-label">
+                  <i class="fas fa-user-tag"></i>
+                  Role
+                </label>
+                <select class="form-control" id="inviteRole">
+                  <option value="viewer">Viewer</option>
+                  <option value="developer">Developer</option>
+                  <option value="ops">Operations</option>
+                  <option value="admin">Administrator</option>
+                </select>
+              </div>
+            </div>
+            <button class="btn btn-primary">
+              <i class="fas fa-paper-plane"></i> Send Invitation
+            </button>
+          </div>
         </div>
 
-        <!-- API Settings (Hidden by default) -->
+        <!-- API Settings -->
         <div id="apiSection" class="settings-section" style="display: none;">
           <div class="section-header">
             <h2><i class="fas fa-code" style="color: var(--warning);"></i> API Configuration</h2>
             <p>Manage API keys and access for integrations and automation</p>
           </div>
           
-          <!-- Content would be here -->
+          <div class="api-card">
+            <h3 style="margin-bottom: 15px; color: var(--primary);">
+              <i class="fas fa-key"></i> Your API Keys
+            </h3>
+            <p style="color: var(--text-muted); margin-bottom: 20px; font-size: 0.9rem;">
+              Use these keys to authenticate API requests. Keep them secure and never share them publicly.
+            </p>
+            
+            <div class="api-key-container">
+              <div class="api-key">
+                sk_live_51MhY2kSJx8L9qKv7t4wE6yU9iOp2rT3aBc5dF7gH8jK1lM2n3P4qR5sT6uV7wX8yZ9
+              </div>
+              <button class="copy-btn" id="copyApiKey">
+                <i class="fas fa-copy"></i> Copy Key
+              </button>
+            </div>
+            
+            <div class="api-actions">
+              <button class="btn btn-primary">
+                <i class="fas fa-plus"></i> Generate New Key
+              </button>
+              <button class="btn btn-warning">
+                <i class="fas fa-redo"></i> Regenerate Key
+              </button>
+              <button class="btn btn-danger">
+                <i class="fas fa-trash"></i> Revoke Key
+              </button>
+            </div>
+          </div>
+
+          <div class="toggle-section" style="margin-top: 30px;">
+            <h3><i class="fas fa-shield-alt" style="color: var(--primary);"></i> API Security</h3>
+            
+            <div class="toggle-item">
+              <div class="toggle-info">
+                <h4><i class="fas fa-lock"></i> Require IP Whitelisting</h4>
+                <p>Only allow API requests from specified IP addresses</p>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" id="ipWhitelist">
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+            
+            <div class="toggle-item">
+              <div class="toggle-info">
+                <h4><i class="fas fa-tachometer-alt"></i> Rate Limiting</h4>
+                <p>Limit API requests to prevent abuse</p>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" id="rateLimiting" checked>
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+            
+            <div class="toggle-item">
+              <div class="toggle-info">
+                <h4><i class="fas fa-signature"></i> Webhook Signing</h4>
+                <p>Sign webhook payloads for security verification</p>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" id="webhookSigning" checked>
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+          </div>
         </div>
 
-        <!-- Danger Zone (Hidden by default) -->
+        <!-- Danger Zone -->
         <div id="dangerSection" class="settings-section" style="display: none;">
           <div class="danger-zone">
             <div class="danger-header">
@@ -1000,15 +2157,15 @@
             </p>
             
             <div class="danger-item">
-              <h4>Export All Data</h4>
+              <h4><i class="fas fa-download"></i> Export All Data</h4>
               <p>Download a complete backup of all incidents, services, configuration, and logs in JSON format.</p>
-              <button class="btn btn-secondary">
+              <button class="btn btn-secondary" id="exportData">
                 <i class="fas fa-download"></i> Export Data Backup
               </button>
             </div>
             
             <div class="danger-item">
-              <h4>Reset Dashboard</h4>
+              <h4><i class="fas fa-redo"></i> Reset Dashboard</h4>
               <p>Clear all incidents, reset counters, and restore default configuration settings.</p>
               <button class="btn btn-warning" id="resetDashboard">
                 <i class="fas fa-redo"></i> Reset Dashboard
@@ -1016,7 +2173,7 @@
             </div>
             
             <div class="danger-item">
-              <h4>Delete Account</h4>
+              <h4><i class="fas fa-trash"></i> Delete Account</h4>
               <p>Permanently delete your account and all associated data. This action cannot be undone.</p>
               <button class="btn btn-danger" id="deleteAccount">
                 <i class="fas fa-trash"></i> Delete Account
@@ -1042,7 +2199,7 @@
   <div class="modal" id="confirmationModal" style="display: none;">
     <div class="modal-content">
       <div class="modal-header">
-        <h2 style="margin: 0; color: var(--danger);">Confirm Action</h2>
+        <h2 style="margin: 0; color: var(--danger);" id="modalTitle">Confirm Action</h2>
       </div>
       <div class="modal-body">
         <p id="modalMessage" style="color: var(--text-primary); font-size: 1rem; line-height: 1.6;">
@@ -1060,7 +2217,10 @@
     </div>
   </div>
 
-    <script>
+  <!-- Notification Container -->
+  <div id="notificationContainer"></div>
+
+  <script>
     // Complete JavaScript for Settings Page
     document.addEventListener('DOMContentLoaded', () => {
       initializePage();
@@ -1102,9 +2262,18 @@
       document.getElementById('animationsToggle').checked = savedAnimations !== 'false';
       document.getElementById('soundToggle').checked = savedSound === 'true';
 
-      // Apply dark mode if saved
-      if (savedDarkMode === 'true') {
-        document.body.classList.add('dark-mode');
+      // Apply notification settings
+      document.getElementById('emailNotifications').checked = localStorage.getItem('emailNotifications') !== 'false';
+      document.getElementById('pushNotifications').checked = localStorage.getItem('pushNotifications') === 'true';
+      document.getElementById('smsAlerts').checked = localStorage.getItem('smsAlerts') === 'true';
+      document.getElementById('desktopNotifications').checked = localStorage.getItem('desktopNotifications') !== 'false';
+      
+      if (localStorage.getItem('notificationEmail')) {
+        document.getElementById('notificationEmail').value = localStorage.getItem('notificationEmail');
+      }
+      
+      if (localStorage.getItem('notificationPhone')) {
+        document.getElementById('notificationPhone').value = localStorage.getItem('notificationPhone');
       }
     }
 
@@ -1116,7 +2285,18 @@
       document.getElementById('discardChanges').addEventListener('click', discardChanges);
       
       // Dark Mode Toggle
-      document.getElementById('darkModeToggle').addEventListener('change', toggleDarkMode);
+      const darkModeToggle = document.getElementById('darkModeToggle');
+      const themeToggleBtn = document.getElementById('themeToggleBtn');
+      
+      darkModeToggle.addEventListener('change', toggleDarkMode);
+      
+      if (themeToggleBtn) {
+        themeToggleBtn.addEventListener('click', () => {
+          const isDarkMode = !document.body.classList.contains('dark-mode');
+          darkModeToggle.checked = isDarkMode;
+          toggleDarkMode();
+        });
+      }
       
       // Danger Zone Buttons
       document.getElementById('resetDashboard').addEventListener('click', () => {
@@ -1135,6 +2315,11 @@
         );
       });
       
+      document.getElementById('exportData').addEventListener('click', exportData);
+      
+      // Copy API Key Button
+      document.getElementById('copyApiKey').addEventListener('click', copyApiKey);
+      
       // Modal Event Listeners
       document.getElementById('modalCancel').addEventListener('click', hideConfirmationModal);
       document.getElementById('modalConfirm').addEventListener('click', confirmAction);
@@ -1145,6 +2330,12 @@
           hideConfirmationModal();
         }
       });
+      
+      // Mobile menu toggle
+      document.getElementById('menuToggle').addEventListener('click', toggleMobileMenu);
+      
+      // Update theme toggle button icon
+      updateThemeToggleIcon();
     }
 
     function setupSettingsNavigation() {
@@ -1181,12 +2372,45 @@
 
     function initializeDarkMode() {
       // Check system preference if no saved preference
-      if (!localStorage.getItem('darkMode')) {
-        const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
-        if (prefersDarkScheme.matches) {
-          document.body.classList.add('dark-mode');
-          document.getElementById('darkModeToggle').checked = true;
+      const savedDarkMode = localStorage.getItem('darkMode');
+      const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+      
+      if (savedDarkMode === 'true' || (!savedDarkMode && prefersDarkScheme.matches)) {
+        document.body.classList.add('dark-mode');
+        document.getElementById('darkModeToggle').checked = true;
+        if (!savedDarkMode) {
           localStorage.setItem('darkMode', 'true');
+        }
+      }
+      updateThemeToggleIcon();
+    }
+
+    function toggleDarkMode() {
+      const isDarkMode = document.getElementById('darkModeToggle').checked;
+      if (isDarkMode) {
+        document.body.classList.add('dark-mode');
+        showNotification('Dark mode enabled', 'success');
+      } else {
+        document.body.classList.remove('dark-mode');
+        showNotification('Light mode enabled', 'success');
+      }
+      localStorage.setItem('darkMode', isDarkMode);
+      updateThemeToggleIcon();
+    }
+
+    function updateThemeToggleIcon() {
+      const themeToggleBtn = document.getElementById('themeToggleBtn');
+      if (themeToggleBtn) {
+        const icon = themeToggleBtn.querySelector('i');
+        const text = themeToggleBtn.querySelector('span');
+        const isDarkMode = document.body.classList.contains('dark-mode');
+        
+        if (isDarkMode) {
+          icon.className = 'fas fa-sun';
+          text.textContent = 'Light Mode';
+        } else {
+          icon.className = 'fas fa-moon';
+          text.textContent = 'Dark Mode';
         }
       }
     }
@@ -1202,7 +2426,13 @@
         compactView: document.getElementById('compactViewToggle').checked,
         showCharts: document.getElementById('showChartsToggle').checked,
         animations: document.getElementById('animationsToggle').checked,
-        sound: document.getElementById('soundToggle').checked
+        sound: document.getElementById('soundToggle').checked,
+        emailNotifications: document.getElementById('emailNotifications').checked,
+        pushNotifications: document.getElementById('pushNotifications').checked,
+        smsAlerts: document.getElementById('smsAlerts').checked,
+        desktopNotifications: document.getElementById('desktopNotifications').checked,
+        notificationEmail: document.getElementById('notificationEmail').value,
+        notificationPhone: document.getElementById('notificationPhone').value
       };
 
       // Save to localStorage
@@ -1212,13 +2442,6 @@
 
       // Show success notification
       showNotification('Settings saved successfully!', 'success');
-
-      // Apply settings immediately
-      if (settings.darkMode) {
-        document.body.classList.add('dark-mode');
-      } else {
-        document.body.classList.remove('dark-mode');
-      }
     }
 
     function discardChanges() {
@@ -1233,16 +2456,10 @@
       );
     }
 
-    function toggleDarkMode() {
-      const isDarkMode = document.getElementById('darkModeToggle').checked;
-      document.body.classList.toggle('dark-mode', isDarkMode);
-      localStorage.setItem('darkMode', isDarkMode);
-    }
-
     function showConfirmationModal(title, message, confirmCallback) {
       const modal = document.getElementById('confirmationModal');
       const modalMessage = document.getElementById('modalMessage');
-      const modalTitle = modal.querySelector('h2');
+      const modalTitle = document.getElementById('modalTitle');
       
       modalTitle.textContent = title;
       modalMessage.textContent = message;
@@ -1251,11 +2468,7 @@
       modal.dataset.confirmCallback = confirmCallback.toString();
       
       // Show modal with animation
-      modal.style.display = 'block';
-      setTimeout(() => {
-        modal.querySelector('.modal-content').style.transform = 'scale(1)';
-        modal.querySelector('.modal-content').style.opacity = '1';
-      }, 10);
+      modal.style.display = 'flex';
       
       // Prevent body scrolling
       document.body.style.overflow = 'hidden';
@@ -1263,15 +2476,8 @@
 
     function hideConfirmationModal() {
       const modal = document.getElementById('confirmationModal');
-      const modalContent = modal.querySelector('.modal-content');
-      
-      modalContent.style.transform = 'scale(0.9)';
-      modalContent.style.opacity = '0';
-      
-      setTimeout(() => {
-        modal.style.display = 'none';
-        document.body.style.overflow = 'auto';
-      }, 300);
+      modal.style.display = 'none';
+      document.body.style.overflow = 'auto';
     }
 
     function confirmAction() {
@@ -1281,7 +2487,7 @@
       if (confirmCallbackStr) {
         try {
           // Parse and execute the callback
-          const confirmCallback = new Function('return ' + confirmCallbackStr)();
+          const confirmCallback = eval(`(${confirmCallbackStr})`);
           if (typeof confirmCallback === 'function') {
             confirmCallback();
           }
@@ -1300,7 +2506,7 @@
       // Simulate API call delay
       setTimeout(() => {
         // Clear dashboard data
-        ['incidents', 'services', 'analytics'].forEach(key => {
+        ['incidents', 'services', 'analytics', 'logs'].forEach(key => {
           localStorage.removeItem(key);
         });
         
@@ -1311,13 +2517,13 @@
           refreshInterval: '10',
           language: 'en',
           showCharts: true,
-          animations: true
+          animations: true,
+          emailNotifications: true,
+          desktopNotifications: true
         };
         
         Object.keys(defaults).forEach(key => {
-          if (!['darkMode', 'compactView', 'sound'].includes(key)) {
-            localStorage.setItem(key, defaults[key]);
-          }
+          localStorage.setItem(key, defaults[key]);
         });
         
         showNotification('Dashboard has been reset successfully!', 'success');
@@ -1342,17 +2548,54 @@
         
         // Redirect to login page after delay
         setTimeout(() => {
-          window.location.href = 'index.html'; // or login.html
+          window.location.href = 'index.html';
         }, 1500);
       }, 1000);
     }
 
-    function showNotification(message, type = 'info') {
-      // Remove existing notifications
-      const existingNotifications = document.querySelectorAll('.notification');
-      existingNotifications.forEach(notification => {
-        notification.remove();
+    function exportData() {
+      showNotification('Preparing data export...', 'info');
+      
+      // Simulate data collection
+      setTimeout(() => {
+        const exportData = {
+          settings: Object.fromEntries(
+            Object.entries(localStorage).filter(([key]) => !key.startsWith('_'))
+          ),
+          timestamp: new Date().toISOString(),
+          version: '1.0.0'
+        };
+        
+        const dataStr = JSON.stringify(exportData, null, 2);
+        const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+        
+        const exportFileDefaultName = `dashboard-backup-${new Date().toISOString().split('T')[0]}.json`;
+        
+        const linkElement = document.createElement('a');
+        linkElement.setAttribute('href', dataUri);
+        linkElement.setAttribute('download', exportFileDefaultName);
+        linkElement.click();
+        
+        showNotification('Data exported successfully!', 'success');
+      }, 500);
+    }
+
+    function copyApiKey() {
+      const apiKey = document.querySelector('.api-key').textContent;
+      navigator.clipboard.writeText(apiKey).then(() => {
+        showNotification('API key copied to clipboard!', 'success');
+      }).catch(err => {
+        showNotification('Failed to copy API key', 'error');
+        console.error('Failed to copy:', err);
       });
+    }
+
+    function toggleMobileMenu() {
+      document.getElementById('sidebar').classList.toggle('active');
+    }
+
+    function showNotification(message, type = 'info') {
+      const notificationContainer = document.getElementById('notificationContainer');
       
       // Create notification element
       const notification = document.createElement('div');
@@ -1367,75 +2610,8 @@
         </button>
       `;
       
-      // Add styles if not already present
-      if (!document.querySelector('#notification-styles')) {
-        const styles = document.createElement('style');
-        styles.id = 'notification-styles';
-        styles.textContent = `
-          .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-left: 4px solid var(--primary);
-            border-radius: 8px;
-            padding: 16px 20px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-            z-index: 9999;
-            transform: translateX(400px);
-            transition: transform 0.3s ease;
-            max-width: 350px;
-          }
-          .notification.show {
-            transform: translateX(0);
-          }
-          .notification-success {
-            border-left-color: var(--success);
-          }
-          .notification-warning {
-            border-left-color: var(--warning);
-          }
-          .notification-error {
-            border-left-color: var(--danger);
-          }
-          .notification-content {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-          }
-          .notification-content i {
-            font-size: 1.2rem;
-          }
-          .notification-success .notification-content i {
-            color: var(--success);
-          }
-          .notification-warning .notification-content i {
-            color: var(--warning);
-          }
-          .notification-error .notification-content i {
-            color: var(--danger);
-          }
-          .notification-close {
-            position: absolute;
-            top: 8px;
-            right: 8px;
-            background: none;
-            border: none;
-            color: var(--text-muted);
-            cursor: pointer;
-            padding: 4px;
-            border-radius: 4px;
-          }
-          .notification-close:hover {
-            background: var(--bg-accent);
-          }
-        `;
-        document.head.appendChild(styles);
-      }
-      
-      // Add to page
-      document.body.appendChild(notification);
+      // Add to container
+      notificationContainer.appendChild(notification);
       
       // Show with animation
       setTimeout(() => notification.classList.add('show'), 10);
@@ -1452,5 +2628,108 @@
         notification.classList.remove('show');
         setTimeout(() => notification.remove(), 300);
       });
+      
+      // Add notification styles if not already present
+      if (!document.querySelector('#notification-styles')) {
+        const styles = document.createElement('style');
+        styles.id = 'notification-styles';
+        styles.textContent = `
+          #notificationContainer {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            max-width: 350px;
+          }
+          
+          .notification {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--primary);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: var(--shadow-lg);
+            transform: translateX(400px);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+          }
+          
+          .notification.show {
+            transform: translateX(0);
+          }
+          
+          .notification-success {
+            border-left-color: var(--success);
+          }
+          
+          .notification-warning {
+            border-left-color: var(--warning);
+          }
+          
+          .notification-error {
+            border-left-color: var(--danger);
+          }
+          
+          .notification-info {
+            border-left-color: var(--info);
+          }
+          
+          .notification-content {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex: 1;
+          }
+          
+          .notification-content i {
+            font-size: 1.4rem;
+          }
+          
+          .notification-success .notification-content i {
+            color: var(--success);
+          }
+          
+          .notification-warning .notification-content i {
+            color: var(--warning);
+          }
+          
+          .notification-error .notification-content i {
+            color: var(--danger);
+          }
+          
+          .notification-info .notification-content i {
+            color: var(--info);
+          }
+          
+          .notification-close {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+          }
+          
+          .notification-close:hover {
+            background: var(--bg-accent);
+            transform: rotate(90deg);
+          }
+        `;
+        document.head.appendChild(styles);
+      }
     }
   </script>
+</body>
+</html>
