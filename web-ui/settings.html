@@ -1060,7 +1060,7 @@
     </div>
   </div>
 
-  <script>
+    <script>
     // Complete JavaScript for Settings Page
     document.addEventListener('DOMContentLoaded', () => {
       initializePage();
@@ -1071,7 +1071,7 @@
     });
 
     function initializePage() {
-      // Set active nav item
+      // Set active nav item in main sidebar
       const navItems = document.querySelectorAll('.nav-item');
       navItems.forEach(item => item.classList.remove('active'));
       document.querySelector('a[href="settings.html"]').classList.add('active');
@@ -1098,4 +1098,359 @@
       // Apply toggle settings
       document.getElementById('darkModeToggle').checked = savedDarkMode === 'true';
       document.getElementById('compactViewToggle').checked = savedCompact === 'true';
-      document.getElementById('show
+      document.getElementById('showChartsToggle').checked = savedCharts !== 'false';
+      document.getElementById('animationsToggle').checked = savedAnimations !== 'false';
+      document.getElementById('soundToggle').checked = savedSound === 'true';
+
+      // Apply dark mode if saved
+      if (savedDarkMode === 'true') {
+        document.body.classList.add('dark-mode');
+      }
+    }
+
+    function setupEventListeners() {
+      // Save Settings Button
+      document.getElementById('saveSettings').addEventListener('click', saveAllSettings);
+      
+      // Discard Changes Button
+      document.getElementById('discardChanges').addEventListener('click', discardChanges);
+      
+      // Dark Mode Toggle
+      document.getElementById('darkModeToggle').addEventListener('change', toggleDarkMode);
+      
+      // Danger Zone Buttons
+      document.getElementById('resetDashboard').addEventListener('click', () => {
+        showConfirmationModal(
+          'Reset Dashboard',
+          'This will clear all incidents, reset counters, and restore default settings. This action cannot be undone. Are you sure you want to proceed?',
+          resetDashboard
+        );
+      });
+      
+      document.getElementById('deleteAccount').addEventListener('click', () => {
+        showConfirmationModal(
+          'Delete Account',
+          'This will permanently delete your account and all associated data. This action is irreversible. Are you absolutely sure?',
+          deleteAccount
+        );
+      });
+      
+      // Modal Event Listeners
+      document.getElementById('modalCancel').addEventListener('click', hideConfirmationModal);
+      document.getElementById('modalConfirm').addEventListener('click', confirmAction);
+      
+      // Add click outside modal to close
+      document.getElementById('confirmationModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+          hideConfirmationModal();
+        }
+      });
+    }
+
+    function setupSettingsNavigation() {
+      const navItems = document.querySelectorAll('.settings-nav-item');
+      const sections = document.querySelectorAll('.settings-section');
+      
+      navItems.forEach(item => {
+        item.addEventListener('click', function(e) {
+          e.preventDefault();
+          
+          // Remove active class from all nav items
+          navItems.forEach(navItem => navItem.classList.remove('active'));
+          
+          // Add active class to clicked nav item
+          this.classList.add('active');
+          
+          // Hide all sections
+          sections.forEach(section => {
+            section.style.display = 'none';
+          });
+          
+          // Show corresponding section
+          const sectionId = this.getAttribute('data-section');
+          const targetSection = document.getElementById(`${sectionId}Section`);
+          if (targetSection) {
+            targetSection.style.display = 'block';
+            
+            // Smooth scroll to top of content area
+            document.querySelector('.settings-content').scrollTop = 0;
+          }
+        });
+      });
+    }
+
+    function initializeDarkMode() {
+      // Check system preference if no saved preference
+      if (!localStorage.getItem('darkMode')) {
+        const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+        if (prefersDarkScheme.matches) {
+          document.body.classList.add('dark-mode');
+          document.getElementById('darkModeToggle').checked = true;
+          localStorage.setItem('darkMode', 'true');
+        }
+      }
+    }
+
+    function saveAllSettings() {
+      // Collect all settings
+      const settings = {
+        dashboardName: document.getElementById('dashboardName').value,
+        timezone: document.getElementById('timezone').value,
+        refreshInterval: document.getElementById('refreshInterval').value,
+        language: document.getElementById('language').value,
+        darkMode: document.getElementById('darkModeToggle').checked,
+        compactView: document.getElementById('compactViewToggle').checked,
+        showCharts: document.getElementById('showChartsToggle').checked,
+        animations: document.getElementById('animationsToggle').checked,
+        sound: document.getElementById('soundToggle').checked
+      };
+
+      // Save to localStorage
+      Object.keys(settings).forEach(key => {
+        localStorage.setItem(key, settings[key]);
+      });
+
+      // Show success notification
+      showNotification('Settings saved successfully!', 'success');
+
+      // Apply settings immediately
+      if (settings.darkMode) {
+        document.body.classList.add('dark-mode');
+      } else {
+        document.body.classList.remove('dark-mode');
+      }
+    }
+
+    function discardChanges() {
+      showConfirmationModal(
+        'Discard Changes',
+        'Are you sure you want to discard all unsaved changes?',
+        () => {
+          loadSavedSettings();
+          hideConfirmationModal();
+          showNotification('Changes discarded', 'info');
+        }
+      );
+    }
+
+    function toggleDarkMode() {
+      const isDarkMode = document.getElementById('darkModeToggle').checked;
+      document.body.classList.toggle('dark-mode', isDarkMode);
+      localStorage.setItem('darkMode', isDarkMode);
+    }
+
+    function showConfirmationModal(title, message, confirmCallback) {
+      const modal = document.getElementById('confirmationModal');
+      const modalMessage = document.getElementById('modalMessage');
+      const modalTitle = modal.querySelector('h2');
+      
+      modalTitle.textContent = title;
+      modalMessage.textContent = message;
+      
+      // Store callback
+      modal.dataset.confirmCallback = confirmCallback.toString();
+      
+      // Show modal with animation
+      modal.style.display = 'block';
+      setTimeout(() => {
+        modal.querySelector('.modal-content').style.transform = 'scale(1)';
+        modal.querySelector('.modal-content').style.opacity = '1';
+      }, 10);
+      
+      // Prevent body scrolling
+      document.body.style.overflow = 'hidden';
+    }
+
+    function hideConfirmationModal() {
+      const modal = document.getElementById('confirmationModal');
+      const modalContent = modal.querySelector('.modal-content');
+      
+      modalContent.style.transform = 'scale(0.9)';
+      modalContent.style.opacity = '0';
+      
+      setTimeout(() => {
+        modal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+      }, 300);
+    }
+
+    function confirmAction() {
+      const modal = document.getElementById('confirmationModal');
+      const confirmCallbackStr = modal.dataset.confirmCallback;
+      
+      if (confirmCallbackStr) {
+        try {
+          // Parse and execute the callback
+          const confirmCallback = new Function('return ' + confirmCallbackStr)();
+          if (typeof confirmCallback === 'function') {
+            confirmCallback();
+          }
+        } catch (e) {
+          console.error('Error executing callback:', e);
+          showNotification('Error performing action', 'error');
+        }
+      }
+      
+      hideConfirmationModal();
+    }
+
+    function resetDashboard() {
+      showNotification('Resetting dashboard...', 'warning');
+      
+      // Simulate API call delay
+      setTimeout(() => {
+        // Clear dashboard data
+        ['incidents', 'services', 'analytics'].forEach(key => {
+          localStorage.removeItem(key);
+        });
+        
+        // Reset to defaults
+        const defaults = {
+          dashboardName: 'Production Monitoring',
+          timezone: 'UTC',
+          refreshInterval: '10',
+          language: 'en',
+          showCharts: true,
+          animations: true
+        };
+        
+        Object.keys(defaults).forEach(key => {
+          if (!['darkMode', 'compactView', 'sound'].includes(key)) {
+            localStorage.setItem(key, defaults[key]);
+          }
+        });
+        
+        showNotification('Dashboard has been reset successfully!', 'success');
+        
+        // Reload page after delay
+        setTimeout(() => {
+          window.location.reload();
+        }, 1500);
+      }, 1000);
+    }
+
+    function deleteAccount() {
+      showNotification('Deleting account...', 'warning');
+      
+      // Simulate API call delay
+      setTimeout(() => {
+        // Clear all user data
+        localStorage.clear();
+        sessionStorage.clear();
+        
+        showNotification('Account has been deleted successfully.', 'success');
+        
+        // Redirect to login page after delay
+        setTimeout(() => {
+          window.location.href = 'index.html'; // or login.html
+        }, 1500);
+      }, 1000);
+    }
+
+    function showNotification(message, type = 'info') {
+      // Remove existing notifications
+      const existingNotifications = document.querySelectorAll('.notification');
+      existingNotifications.forEach(notification => {
+        notification.remove();
+      });
+      
+      // Create notification element
+      const notification = document.createElement('div');
+      notification.className = `notification notification-${type}`;
+      notification.innerHTML = `
+        <div class="notification-content">
+          <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'warning' ? 'exclamation-triangle' : type === 'error' ? 'times-circle' : 'info-circle'}"></i>
+          <span>${message}</span>
+        </div>
+        <button class="notification-close">
+          <i class="fas fa-times"></i>
+        </button>
+      `;
+      
+      // Add styles if not already present
+      if (!document.querySelector('#notification-styles')) {
+        const styles = document.createElement('style');
+        styles.id = 'notification-styles';
+        styles.textContent = `
+          .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--primary);
+            border-radius: 8px;
+            padding: 16px 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            z-index: 9999;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            max-width: 350px;
+          }
+          .notification.show {
+            transform: translateX(0);
+          }
+          .notification-success {
+            border-left-color: var(--success);
+          }
+          .notification-warning {
+            border-left-color: var(--warning);
+          }
+          .notification-error {
+            border-left-color: var(--danger);
+          }
+          .notification-content {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+          }
+          .notification-content i {
+            font-size: 1.2rem;
+          }
+          .notification-success .notification-content i {
+            color: var(--success);
+          }
+          .notification-warning .notification-content i {
+            color: var(--warning);
+          }
+          .notification-error .notification-content i {
+            color: var(--danger);
+          }
+          .notification-close {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 4px;
+          }
+          .notification-close:hover {
+            background: var(--bg-accent);
+          }
+        `;
+        document.head.appendChild(styles);
+      }
+      
+      // Add to page
+      document.body.appendChild(notification);
+      
+      // Show with animation
+      setTimeout(() => notification.classList.add('show'), 10);
+      
+      // Auto-remove after 4 seconds
+      const autoRemove = setTimeout(() => {
+        notification.classList.remove('show');
+        setTimeout(() => notification.remove(), 300);
+      }, 4000);
+      
+      // Close button
+      notification.querySelector('.notification-close').addEventListener('click', () => {
+        clearTimeout(autoRemove);
+        notification.classList.remove('show');
+        setTimeout(() => notification.remove(), 300);
+      });
+    }
+  </script>
