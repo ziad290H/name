@@ -3,112 +3,637 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Services - Monitoring Dashboard</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <title>Services Monitoring - Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="stylesheet" href="css/style.css">
   <style>
-    /* Page-specific styles */
+    :root {
+      --bg-primary: #0f172a;
+      --bg-secondary: #1e293b;
+      --bg-card: rgba(30, 41, 59, 0.9);
+      --text-primary: #f8fafc;
+      --text-secondary: #cbd5e1;
+      --text-muted: #94a3b8;
+      --border-color: rgba(148, 163, 184, 0.2);
+      --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
+      --shadow-lg: 0 20px 40px -10px rgba(0, 0, 0, 0.5);
+      --radius: 16px;
+      --radius-sm: 8px;
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      --primary: #3b82f6;
+      --primary-gradient: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --info: #0ea5e9;
+      --glass-bg: rgba(255, 255, 255, 0.05);
+      --glass-border: rgba(255, 255, 255, 0.1);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      color: var(--text-primary);
+      min-height: 100vh;
+      position: relative;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 100vh;
+      background: 
+        radial-gradient(circle at 10% 20%, rgba(59, 130, 246, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 90% 80%, rgba(139, 92, 246, 0.1) 0%, transparent 50%);
+      z-index: -1;
+    }
+
+    /* Enhanced Sidebar */
+    .sidebar {
+      width: 280px;
+      background: rgba(15, 23, 42, 0.97);
+      backdrop-filter: blur(20px);
+      border-right: 1px solid var(--border-color);
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100vh;
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 10px 0 30px rgba(0, 0, 0, 0.3);
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 28px;
+      text-decoration: none;
+      position: relative;
+    }
+
+    .logo::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 28px;
+      right: 28px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--primary), transparent);
+    }
+
+    .logo-icon {
+      width: 44px;
+      height: 44px;
+      background: var(--primary-gradient);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+      transition: var(--transition);
+    }
+
+    .logo:hover .logo-icon {
+      transform: rotate(15deg) scale(1.1);
+    }
+
+    .logo-text {
+      font-weight: 800;
+      font-size: 1.5rem;
+      background: linear-gradient(90deg, #60a5fa, #c4b5fd);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: -0.5px;
+    }
+
+    .nav {
+      padding: 28px 0;
+      flex: 1;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 16px 28px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: var(--transition);
+      position: relative;
+      margin: 4px 0;
+    }
+
+    .nav-item:hover {
+      background: var(--glass-bg);
+      color: var(--text-primary);
+      transform: translateX(8px);
+    }
+
+    .nav-item.active {
+      background: linear-gradient(90deg, rgba(59, 130, 246, 0.2), transparent);
+      border-left: 4px solid var(--primary);
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+
+    .nav-item.active::before {
+      content: '';
+      position: absolute;
+      right: 20px;
+      width: 8px;
+      height: 8px;
+      background: var(--primary);
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.9); }
+    }
+
+    .sidebar-footer {
+      padding: 28px;
+      border-top: 1px solid var(--border-color);
+    }
+
+    .user-profile {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      transition: var(--transition);
+    }
+
+    .user-profile:hover {
+      transform: translateY(-2px);
+    }
+
+    .user-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: var(--primary-gradient);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 1.1rem;
+      box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+    }
+
+    .user-info h4 {
+      font-size: 0.95rem;
+      font-weight: 700;
+    }
+
+    .user-info p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    /* Main Content */
+    .main {
+      margin-left: 280px;
+      padding: 32px;
+      min-height: 100vh;
+    }
+
+    /* Enhanced Header */
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 32px;
+      padding: 28px;
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .page-header::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: var(--primary-gradient);
+    }
+
+    .header-content h1 {
+      font-size: 2.25rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      background: linear-gradient(90deg, #60a5fa, #c4b5fd);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 8px;
+    }
+
+    .header-content p {
+      color: var(--text-muted);
+      max-width: 500px;
+      line-height: 1.6;
+    }
+
+    .header-stats {
+      display: flex;
+      gap: 16px;
+    }
+
+    .stat-pill {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 20px;
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 12px;
+      backdrop-filter: blur(10px);
+      transition: var(--transition);
+      cursor: pointer;
+    }
+
+    .stat-pill:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .stat-pill i {
+      font-size: 1.2rem;
+    }
+
+    .stat-pill.healthy i { color: var(--success); }
+    .stat-pill.degraded i { color: var(--warning); }
+    .stat-pill.down i { color: var(--danger); }
+
+    /* Quick Actions */
+    .quick-actions {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 32px;
+      flex-wrap: wrap;
+    }
+
+    .action-btn {
+      padding: 14px 24px;
+      border-radius: var(--radius-sm);
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: var(--transition);
+      border: none;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .action-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: left 0.6s ease;
+    }
+
+    .action-btn:hover::before {
+      left: 100%;
+    }
+
+    .btn-primary {
+      background: var(--primary-gradient);
+      color: white;
+      box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 15px 35px rgba(59, 130, 246, 0.6);
+    }
+
+    .btn-secondary {
+      background: var(--glass-bg);
+      color: var(--text-primary);
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(10px);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(59, 130, 246, 0.1);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Enhanced Services Grid */
     .services-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
       gap: 24px;
       margin-top: 24px;
     }
-    
+
     .service-card {
-      background-color: var(--bg-card);
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
       border-radius: var(--radius);
-      padding: 24px;
-      border: 1px solid var(--border-color);
+      padding: 28px;
+      border: 1px solid var(--glass-border);
       transition: var(--transition);
       position: relative;
+      overflow: hidden;
+      cursor: pointer;
     }
-    
+
     .service-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
+      transform: translateY(-8px);
+      box-shadow: var(--shadow-lg);
+      border-color: var(--primary);
     }
-    
+
+    .service-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: var(--primary-gradient);
+      transform: scaleX(0);
+      transition: transform 0.3s ease;
+    }
+
+    .service-card:hover::before {
+      transform: scaleX(1);
+    }
+
     .service-status {
       position: absolute;
-      top: 20px;
-      right: 20px;
-      width: 12px;
-      height: 12px;
+      top: 24px;
+      right: 24px;
+      width: 14px;
+      height: 14px;
       border-radius: 50%;
+      box-shadow: 0 0 10px currentColor;
+      animation: statusPulse 2s infinite;
     }
-    
-    .service-status.healthy { background-color: var(--success); }
-    .service-status.degraded { background-color: var(--warning); }
-    .service-status.down { background-color: var(--danger); }
-    
+
+    @keyframes statusPulse {
+      0%, 100% { box-shadow: 0 0 10px currentColor; }
+      50% { box-shadow: 0 0 20px currentColor; }
+    }
+
+    .service-status.healthy { 
+      background: var(--success);
+      color: var(--success);
+    }
+    .service-status.degraded { 
+      background: var(--warning);
+      color: var(--warning);
+    }
+    .service-status.down { 
+      background: var(--danger);
+      color: var(--danger);
+    }
+
+    .service-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .service-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 14px;
+      background: var(--primary-gradient);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.75rem;
+      box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+      transition: var(--transition);
+    }
+
+    .service-card:hover .service-icon {
+      transform: rotate(15deg) scale(1.1);
+    }
+
+    .service-title h3 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .service-title p {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      font-family: 'SF Mono', monospace;
+    }
+
+    /* Service Metrics */
     .service-metrics {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 16px;
-      margin: 20px 0;
+      gap: 20px;
+      margin: 24px 0;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-color);
     }
-    
+
     .metric {
       text-align: center;
+      padding: 12px;
+      transition: var(--transition);
     }
-    
+
+    .metric:hover {
+      transform: translateY(-2px);
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: var(--radius-sm);
+    }
+
     .metric-value {
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: var(--text-primary);
+      font-size: 1.75rem;
+      font-weight: 800;
+      margin-bottom: 4px;
+      background: linear-gradient(90deg, #60a5fa, #c4b5fd);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
-    
+
     .metric-label {
       font-size: 0.75rem;
       color: var(--text-muted);
-      margin-top: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-weight: 600;
     }
-    
-    .service-actions {
-      display: flex;
-      gap: 8px;
-      margin-top: 16px;
-    }
-    
+
+    /* Uptime Chart */
     .uptime-chart {
-      height: 4px;
-      background-color: var(--bg-accent);
-      border-radius: 2px;
-      margin: 8px 0;
+      height: 6px;
+      background: var(--bg-secondary);
+      border-radius: 3px;
+      margin: 16px 0;
       overflow: hidden;
+      position: relative;
     }
-    
+
     .uptime-fill {
       height: 100%;
-      border-radius: 2px;
+      border-radius: 3px;
+      transition: width 1s ease;
+      position: relative;
+      overflow: hidden;
     }
-    
-    .uptime-fill.healthy { background-color: var(--success); }
-    .uptime-fill.degraded { background-color: var(--warning); }
-    .uptime-fill.down { background-color: var(--danger); }
-    
+
+    .uptime-fill::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(90deg, 
+        transparent, 
+        rgba(255, 255, 255, 0.3), 
+        transparent);
+      animation: shimmer 2s infinite;
+    }
+
+    @keyframes shimmer {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+
+    .uptime-fill.healthy { 
+      background: linear-gradient(90deg, var(--success), #34d399);
+    }
+    .uptime-fill.degraded { 
+      background: linear-gradient(90deg, var(--warning), #fbbf24);
+    }
+    .uptime-fill.down { 
+      background: linear-gradient(90deg, var(--danger), #f87171);
+    }
+
+    .uptime-info {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+
+    /* Dependencies */
     .dependency-list {
-      margin-top: 16px;
-      padding-top: 16px;
+      margin-top: 24px;
+      padding-top: 20px;
       border-top: 1px solid var(--border-color);
     }
-    
+
+    .dependency-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .dependency-header h4 {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
     .dependency-item {
       display: flex;
       align-items: center;
-      gap: 8px;
-      padding: 6px 0;
+      gap: 10px;
+      padding: 10px 0;
+      font-size: 0.875rem;
+      transition: var(--transition);
+      border-radius: 6px;
+      padding-left: 8px;
+    }
+
+    .dependency-item:hover {
+      background: rgba(255, 255, 255, 0.05);
+      transform: translateX(4px);
+    }
+
+    .dependency-status {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      box-shadow: 0 0 8px currentColor;
+      animation: pulse 2s infinite;
+    }
+
+    .dependency-status.healthy { 
+      background: var(--success);
+      color: var(--success);
+    }
+    .dependency-status.degraded { 
+      background: var(--warning);
+      color: var(--warning);
+    }
+    .dependency-status.down { 
+      background: var(--danger);
+      color: var(--danger);
+    }
+
+    /* Service Actions */
+    .service-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    .service-actions .btn {
+      flex: 1;
+      padding: 12px;
       font-size: 0.875rem;
     }
-    
-    .dependency-status {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
+
+    /* Service Footer */
+    .service-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 20px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border-color);
+      font-size: 0.75rem;
+      color: var(--text-muted);
     }
-    
+
+    /* Modal */
     .service-modal {
       display: none;
       position: fixed;
@@ -116,16 +641,269 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background-color: rgba(0, 0, 0, 0.7);
-      z-index: 1000;
+      background: rgba(15, 23, 42, 0.95);
+      backdrop-filter: blur(20px);
+      z-index: 2000;
       align-items: center;
       justify-content: center;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .modal-content {
+      width: 90%;
+      max-width: 800px;
+      max-height: 90vh;
+      overflow-y: auto;
+      background: var(--glass-bg);
+      backdrop-filter: blur(30px);
+      border-radius: var(--radius);
+      border: 1px solid var(--glass-border);
+      box-shadow: var(--shadow-lg);
+      animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    @keyframes slideUp {
+      from { 
+        transform: translateY(40px);
+        opacity: 0;
+      }
+      to { 
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .modal-header {
+      padding: 28px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-header h2 {
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 2rem;
+      cursor: pointer;
+      transition: var(--transition);
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+    }
+
+    .modal-close:hover {
+      color: var(--text-primary);
+      background: var(--glass-bg);
+    }
+
+    .modal-body {
+      padding: 28px;
+    }
+
+    /* Toast Notifications */
+    .toast-container {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 3000;
+    }
+
+    .toast {
+      padding: 16px 24px;
+      margin-top: 12px;
+      border-radius: var(--radius-sm);
+      color: white;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      animation: slideInRight 0.3s ease;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      max-width: 400px;
+    }
+
+    @keyframes slideInRight {
+      from {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    .toast.success {
+      background: linear-gradient(135deg, var(--success), #34d399);
+    }
+
+    .toast.error {
+      background: linear-gradient(135deg, var(--danger), #f87171);
+    }
+
+    .toast.warning {
+      background: linear-gradient(135deg, var(--warning), #fbbf24);
+    }
+
+    .toast.info {
+      background: linear-gradient(135deg, var(--primary), #60a5fa);
+    }
+
+    /* Loading States */
+    .skeleton {
+      background: linear-gradient(90deg, var(--bg-secondary) 25%, var(--glass-bg) 50%, var(--bg-secondary) 75%);
+      background-size: 200% 100%;
+      animation: loading 1.5s infinite;
+      border-radius: 4px;
+    }
+
+    @keyframes loading {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    /* Responsive Design */
+    @media (max-width: 1200px) {
+      .services-grid {
+        grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      }
+    }
+
+    @media (max-width: 1024px) {
+      .sidebar {
+        transform: translateX(-100%);
+        box-shadow: none;
+      }
+      
+      .sidebar.active {
+        transform: translateX(0);
+        box-shadow: 10px 0 30px rgba(0, 0, 0, 0.3);
+      }
+      
+      .main {
+        margin-left: 0;
+        padding: 24px;
+      }
+      
+      .menu-toggle {
+        display: flex !important;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 20px;
+      }
+      
+      .header-stats {
+        width: 100%;
+        justify-content: space-between;
+      }
+      
+      .quick-actions {
+        flex-direction: column;
+      }
+      
+      .services-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .service-metrics {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 480px) {
+      .main {
+        padding: 16px;
+      }
+      
+      .page-header {
+        padding: 20px;
+      }
+      
+      .header-stats {
+        flex-direction: column;
+        gap: 12px;
+      }
+      
+      .stat-pill {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+
+    /* Mobile Menu Toggle */
+    .menu-toggle {
+      display: none;
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      z-index: 1001;
+      background: var(--primary-gradient);
+      color: white;
+      width: 56px;
+      height: 56px;
+      border-radius: 12px;
+      border: none;
+      cursor: pointer;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      box-shadow: var(--shadow);
+      transition: var(--transition);
+    }
+
+    .menu-toggle:hover {
+      transform: scale(1.1);
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--bg-secondary);
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--primary-gradient);
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: linear-gradient(135deg, #2563eb, #7c3aed);
     }
   </style>
 </head>
 <body>
-  <!-- Sidebar Navigation -->
-  <div class="sidebar">
+  <!-- Mobile Menu Toggle -->
+  <button class="menu-toggle" id="menuToggle">
+    <i class="fas fa-bars"></i>
+  </button>
+
+  <!-- Sidebar -->
+  <div class="sidebar" id="sidebar">
     <a href="index.html" class="logo">
       <div class="logo-icon">
         <i class="fas fa-shield-alt"></i>
@@ -135,90 +913,83 @@
 
     <nav class="nav">
       <a href="index.html" class="nav-item">
-        <div class="nav-icon"><i class="fas fa-tachometer-alt"></i></div>
-        <span class="nav-text">Overview</span>
+        <i class="fas fa-tachometer-alt"></i>
+        <span>Dashboard</span>
       </a>
       <a href="incidents.html" class="nav-item">
-        <div class="nav-icon"><i class="fas fa-exclamation-triangle"></i></div>
-        <span class="nav-text">Incidents</span>
+        <i class="fas fa-exclamation-triangle"></i>
+        <span>Incidents</span>
       </a>
-      <a href="services.html" class="nav-item">
-        <div class="nav-icon"><i class="fas fa-server"></i></div>
-        <span class="nav-text">Services</span>
+      <a href="services.html" class="nav-item active">
+        <i class="fas fa-server"></i>
+        <span>Services</span>
       </a>
       <a href="analytics.html" class="nav-item">
-        <div class="nav-icon"><i class="fas fa-chart-line"></i></div>
-        <span class="nav-text">Analytics</span>
+        <i class="fas fa-chart-line"></i>
+        <span>Analytics</span>
       </a>
       <a href="settings.html" class="nav-item">
-        <div class="nav-icon"><i class="fas fa-cog"></i></div>
-        <span class="nav-text">Settings</span>
+        <i class="fas fa-cog"></i>
+        <span>Settings</span>
       </a>
     </nav>
 
     <div class="sidebar-footer">
       <div class="user-profile">
-        <div class="user-avatar">JD</div>
+        <div class="user-avatar">SE</div>
         <div class="user-info">
-          <h4>John Doe</h4>
-          <p>Admin</p>
+          <h4>Saad Elhor</h4>
+          <p>Administrator</p>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Main Content Area -->
+  <!-- Main Content -->
   <div class="main">
-    <!-- Header -->
-    <div class="header">
-      <h1><i class="fas fa-server" style="color: #60a5fa;"></i> Services Monitoring</h1>
-      <div class="header-actions">
-        <button class="btn btn-secondary" id="refreshServices">
-          <i class="fas fa-sync-alt"></i> Refresh
-        </button>
-        <button class="btn btn-primary" id="addService">
-          <i class="fas fa-plus"></i> Add Service
-        </button>
+    <!-- Page Header -->
+    <div class="page-header">
+      <div class="header-content">
+        <h1>
+          <i class="fas fa-server"></i>
+          Services Monitoring
+        </h1>
+        <p>Monitor the health and performance of all your services in real-time</p>
+      </div>
+      <div class="header-stats">
+        <div class="stat-pill healthy" id="healthyPill">
+          <i class="fas fa-check-circle"></i>
+          <span><strong id="healthyCount">0</strong> Healthy</span>
+        </div>
+        <div class="stat-pill degraded" id="degradedPill">
+          <i class="fas fa-exclamation-triangle"></i>
+          <span><strong id="degradedCount">0</strong> Degraded</span>
+        </div>
+        <div class="stat-pill down" id="downPill">
+          <i class="fas fa-times-circle"></i>
+          <span><strong id="downCount">0</strong> Down</span>
+        </div>
       </div>
     </div>
 
-    <!-- Summary Stats -->
-    <div class="grid grid-4" id="servicesSummary">
-      <div class="stat-card total">
-        <div class="stat-header">
-          <div class="stat-title">Total Services</div>
-          <div class="stat-icon"><i class="fas fa-server"></i></div>
-        </div>
-        <div class="stat-value" id="totalServices">0</div>
-        <div class="stat-change positive">+2 this month</div>
-      </div>
-      
-      <div class="stat-card open">
-        <div class="stat-header">
-          <div class="stat-title">Healthy</div>
-          <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
-        </div>
-        <div class="stat-value" id="healthyServices">0</div>
-        <div class="stat-change positive">98.5% uptime</div>
-      </div>
-      
-      <div class="stat-card acknowledged">
-        <div class="stat-header">
-          <div class="stat-title">Degraded</div>
-          <div class="stat-icon"><i class="fas fa-exclamation-triangle"></i></div>
-        </div>
-        <div class="stat-value" id="degradedServices">0</div>
-        <div class="stat-change negative">Needs attention</div>
-      </div>
-      
-      <div class="stat-card resolved">
-        <div class="stat-header">
-          <div class="stat-title">Down</div>
-          <div class="stat-icon"><i class="fas fa-times-circle"></i></div>
-        </div>
-        <div class="stat-value" id="downServices">0</div>
-        <div class="stat-change negative">Critical</div>
-      </div>
+    <!-- Quick Actions -->
+    <div class="quick-actions">
+      <button class="action-btn btn-primary" id="addServiceBtn">
+        <i class="fas fa-plus"></i>
+        Add New Service
+      </button>
+      <button class="action-btn btn-secondary" id="bulkEditBtn">
+        <i class="fas fa-edit"></i>
+        Bulk Edit
+      </button>
+      <button class="action-btn btn-secondary" id="exportBtn">
+        <i class="fas fa-file-export"></i>
+        Export Services
+      </button>
+      <button class="action-btn btn-secondary" id="refreshBtn">
+        <i class="fas fa-sync-alt"></i>
+        Refresh All
+      </button>
     </div>
 
     <!-- Services Grid -->
@@ -227,146 +998,571 @@
     </div>
   </div>
 
-  <script src="js/app.js"></script>
+  <!-- Toast Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Service Detail Modal -->
+  <div class="service-modal" id="serviceModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="modalTitle">Service Details</h2>
+        <button class="modal-close" id="closeModal">&times;</button>
+      </div>
+      <div class="modal-body" id="modalBody">
+        <!-- Will be populated by JavaScript -->
+      </div>
+    </div>
+  </div>
+
   <script>
-    // Page-specific JavaScript
-    document.addEventListener('DOMContentLoaded', () => {
-      loadServices();
-      setupEventListeners();
-    });
-
-    async function loadServices() {
-      try {
-        // Try to fetch from API
-        const response = await fetch("http://localhost:8001/api/v1/services");
-        const services = await response.json();
-        renderServices(services);
-      } catch (err) {
-        // Fallback to sample data
-        console.warn("API unavailable, using sample data:", err);
-        renderServices(sampleServices);
+    // Enhanced Services Monitoring System
+    class ServicesManager {
+      constructor() {
+        this.services = [];
+        this.filteredServices = [];
+        this.statusFilter = 'all';
+        this.init();
       }
-    }
 
-    function renderServices(services) {
-      const grid = document.getElementById('servicesGrid');
-      
-      // Update summary
-      const total = services.length;
-      const healthy = services.filter(s => s.status === 'healthy').length;
-      const degraded = services.filter(s => s.status === 'degraded').length;
-      const down = services.filter(s => s.status === 'down').length;
-      
-      document.getElementById('totalServices').textContent = total;
-      document.getElementById('healthyServices').textContent = healthy;
-      document.getElementById('degradedServices').textContent = degraded;
-      document.getElementById('downServices').textContent = down;
-      
-      if (!services.length) {
+      async init() {
+        this.setupEventListeners();
+        await this.loadServices();
+      }
+
+      async loadServices() {
+        this.showLoadingState();
+        
+        try {
+          // Simulate API call with delay
+          await new Promise(resolve => setTimeout(resolve, 800));
+          
+          this.services = [
+            {
+              id: 'api-gateway-01',
+              name: 'API Gateway',
+              status: 'healthy',
+              uptime: '99.99%',
+              latency: '42ms',
+              lastIncident: '2 days ago',
+              responseTime: 42,
+              errorRate: 0.02,
+              throughput: 1250,
+              dependencies: [
+                { name: 'Load Balancer', status: 'healthy' },
+                { name: 'Authentication', status: 'healthy' },
+                { name: 'Rate Limiter', status: 'healthy' }
+              ],
+              lastUpdated: new Date(Date.now() - 300000),
+              description: 'Main entry point for all API requests',
+              environment: 'Production',
+              team: 'Platform Team'
+            },
+            {
+              id: 'db-cluster-primary',
+              name: 'Database Cluster',
+              status: 'degraded',
+              uptime: '99.85%',
+              latency: '128ms',
+              lastIncident: '1 hour ago',
+              responseTime: 128,
+              errorRate: 1.2,
+              throughput: 850,
+              dependencies: [
+                { name: 'Primary Node', status: 'degraded' },
+                { name: 'Replica Nodes', status: 'healthy' },
+                { name: 'Backup Service', status: 'healthy' }
+              ],
+              lastUpdated: new Date(Date.now() - 60000),
+              description: 'Primary database cluster serving production data',
+              environment: 'Production',
+              team: 'Database Team'
+            },
+            {
+              id: 'auth-service',
+              name: 'Authentication Service',
+              status: 'healthy',
+              uptime: '99.97%',
+              latency: '56ms',
+              lastIncident: '5 days ago',
+              responseTime: 56,
+              errorRate: 0.05,
+              throughput: 3200,
+              dependencies: [
+                { name: 'Redis Cache', status: 'healthy' },
+                { name: 'LDAP Server', status: 'healthy' },
+                { name: 'OAuth Provider', status: 'healthy' }
+              ],
+              lastUpdated: new Date(Date.now() - 120000),
+              description: 'User authentication and authorization service',
+              environment: 'Production',
+              team: 'Security Team'
+            },
+            {
+              id: 'payment-processor',
+              name: 'Payment Processing',
+              status: 'down',
+              uptime: '99.70%',
+              latency: 'N/A',
+              lastIncident: 'Now',
+              responseTime: 0,
+              errorRate: 100,
+              throughput: 0,
+              dependencies: [
+                { name: 'Payment Gateway', status: 'down' },
+                { name: 'Fraud Detection', status: 'degraded' },
+                { name: 'Transaction DB', status: 'healthy' }
+              ],
+              lastUpdated: new Date(Date.now() - 10000),
+              description: 'Payment processing and transaction management',
+              environment: 'Production',
+              team: 'Payment Team'
+            },
+            {
+              id: 'cdn-edge',
+              name: 'CDN Edge Network',
+              status: 'healthy',
+              uptime: '99.99%',
+              latency: '18ms',
+              lastIncident: '1 week ago',
+              responseTime: 18,
+              errorRate: 0.01,
+              throughput: 8500,
+              dependencies: [
+                { name: 'Edge Locations', status: 'healthy' },
+                { name: 'Origin Server', status: 'healthy' },
+                { name: 'DNS Service', status: 'healthy' }
+              ],
+              lastUpdated: new Date(Date.now() - 240000),
+              description: 'Content Delivery Network for global distribution',
+              environment: 'Production',
+              team: 'Infrastructure Team'
+            },
+            {
+              id: 'cache-cluster',
+              name: 'Cache Cluster',
+              status: 'degraded',
+              uptime: '99.90%',
+              latency: '5ms',
+              lastIncident: '3 hours ago',
+              responseTime: 5,
+              errorRate: 0.8,
+              throughput: 45000,
+              dependencies: [
+                { name: 'Redis Nodes', status: 'degraded' },
+                { name: 'Sentinel', status: 'healthy' },
+                { name: 'Monitoring', status: 'healthy' }
+              ],
+              lastUpdated: new Date(Date.now() - 90000),
+              description: 'In-memory cache cluster for high-performance data access',
+              environment: 'Production',
+              team: 'Performance Team'
+            }
+          ];
+          
+          this.filteredServices = [...this.services];
+          this.renderServices();
+          this.updateStats();
+          this.showToast('Services loaded successfully', 'success');
+        } catch (error) {
+          console.error('Failed to load services:', error);
+          this.showToast('Failed to load services', 'error');
+        }
+      }
+
+      showLoadingState() {
+        const grid = document.getElementById('servicesGrid');
         grid.innerHTML = `
-          <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px;">
-            <div style="font-size: 4rem; color: var(--text-muted); margin-bottom: 20px;">
-              <i class="fas fa-server"></i>
-            </div>
-            <h3>No Services Configured</h3>
-            <p style="color: var(--text-muted); max-width: 400px; margin: 10px auto;">
-              Add your first service to start monitoring.
-            </p>
-            <button class="btn btn-primary" style="margin-top: 20px;">
-              <i class="fas fa-plus"></i> Add First Service
-            </button>
+          <div style="grid-column: 1 / -1; display: grid; grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); gap: 24px;">
+            ${Array(4).fill().map(() => `
+              <div class="service-card">
+                <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 20px;">
+                  <div class="skeleton" style="width: 56px; height: 56px; border-radius: 14px;"></div>
+                  <div style="flex: 1;">
+                    <div class="skeleton" style="height: 24px; width: 80%; margin-bottom: 8px;"></div>
+                    <div class="skeleton" style="height: 16px; width: 60%;"></div>
+                  </div>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin: 24px 0;">
+                  ${Array(2).fill().map(() => `
+                    <div class="skeleton" style="height: 48px; border-radius: 8px;"></div>
+                  `).join('')}
+                </div>
+                <div class="skeleton" style="height: 6px; width: 100%; border-radius: 3px; margin: 16px 0;"></div>
+                <div style="margin-top: 24px;">
+                  <div class="skeleton" style="height: 16px; width: 40%; margin-bottom: 12px;"></div>
+                  ${Array(3).fill().map(() => `
+                    <div class="skeleton" style="height: 12px; width: 90%; margin: 8px 0;"></div>
+                  `).join('')}
+                </div>
+              </div>
+            `).join('')}
           </div>
         `;
-        return;
       }
 
-      grid.innerHTML = services.map(service => `
-        <div class="service-card">
-          <div class="service-status ${service.status}"></div>
-          
-          <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
-            <div style="width: 48px; height: 48px; border-radius: 10px; background: linear-gradient(135deg, #3b82f6, #8b5cf6); display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">
-              <i class="fas fa-server"></i>
+      renderServices() {
+        const grid = document.getElementById('servicesGrid');
+        
+        if (this.filteredServices.length === 0) {
+          grid.innerHTML = `
+            <div style="grid-column: 1 / -1; text-align: center; padding: 80px 20px;">
+              <i class="fas fa-server" style="font-size: 4rem; color: var(--text-muted); margin-bottom: 24px; opacity: 0.5;"></i>
+              <h3 style="color: var(--text-primary); margin-bottom: 12px;">No Services Found</h3>
+              <p style="color: var(--text-muted); max-width: 400px; margin: 0 auto 24px; line-height: 1.6;">
+                No services match your current filters. Try adjusting your criteria or add a new service.
+              </p>
+              <button class="action-btn btn-primary" onclick="servicesManager.showAddServiceModal()">
+                <i class="fas fa-plus"></i>
+                Add New Service
+              </button>
             </div>
+          `;
+          return;
+        }
+
+        grid.innerHTML = this.filteredServices.map(service => `
+          <div class="service-card" onclick="servicesManager.viewService('${service.id}')">
+            <div class="service-status ${service.status}"></div>
+            
+            <div class="service-header">
+              <div class="service-icon">
+                <i class="fas fa-server"></i>
+              </div>
+              <div class="service-title">
+                <h3>${service.name}</h3>
+                <p>${service.id}</p>
+              </div>
+            </div>
+            
+            <div class="service-metrics">
+              <div class="metric">
+                <div class="metric-value">${service.uptime}</div>
+                <div class="metric-label">Uptime</div>
+              </div>
+              <div class="metric">
+                <div class="metric-value">${service.latency}</div>
+                <div class="metric-label">Latency</div>
+              </div>
+              <div class="metric">
+                <div class="metric-value">${service.responseTime}ms</div>
+                <div class="metric-label">Response Time</div>
+              </div>
+              <div class="metric">
+                <div class="metric-value">${service.errorRate}%</div>
+                <div class="metric-label">Error Rate</div>
+              </div>
+            </div>
+            
             <div>
-              <h3 style="margin: 0;">${service.name}</h3>
-              <p style="margin: 4px 0 0; color: var(--text-muted); font-size: 0.875rem;">${service.id}</p>
+              <div class="uptime-info">
+                <span>Availability Trend</span>
+                <span>Last 30 days</span>
+              </div>
+              <div class="uptime-chart">
+                <div class="uptime-fill ${service.status}" 
+                     style="width: ${parseFloat(service.uptime)}%"></div>
+              </div>
+            </div>
+            
+            <div class="dependency-list">
+              <div class="dependency-header">
+                <h4>Dependencies</h4>
+                <span style="font-size: 0.75rem; color: var(--text-muted);">
+                  ${service.dependencies.filter(d => d.status === 'healthy').length}/${service.dependencies.length} healthy
+                </span>
+              </div>
+              ${service.dependencies.map(dep => `
+                <div class="dependency-item">
+                  <div class="dependency-status ${dep.status}"></div>
+                  <span>${dep.name}</span>
+                  <span style="margin-left: auto; font-size: 0.7rem; color: var(--text-muted);">
+                    ${dep.status}
+                  </span>
+                </div>
+              `).join('')}
+            </div>
+            
+            <div class="service-actions">
+              <button class="btn btn-secondary" onclick="event.stopPropagation(); servicesManager.viewMetrics('${service.id}')">
+                <i class="fas fa-chart-line"></i>
+                Metrics
+              </button>
+              <button class="btn btn-secondary" onclick="event.stopPropagation(); servicesManager.editService('${service.id}')">
+                <i class="fas fa-cog"></i>
+                Configure
+              </button>
+            </div>
+            
+            <div class="service-footer">
+              <div>
+                <i class="far fa-clock"></i>
+                Updated ${this.getTimeAgo(service.lastUpdated)}
+              </div>
+              <div style="display: flex; align-items: center; gap: 4px;">
+                <i class="fas fa-users"></i>
+                ${service.team}
+              </div>
             </div>
           </div>
+        `).join('');
+      }
+
+      updateStats() {
+        const healthy = this.services.filter(s => s.status === 'healthy').length;
+        const degraded = this.services.filter(s => s.status === 'degraded').length;
+        const down = this.services.filter(s => s.status === 'down').length;
+
+        document.getElementById('healthyCount').textContent = healthy;
+        document.getElementById('degradedCount').textContent = degraded;
+        document.getElementById('downCount').textContent = down;
+
+        // Update pill colors based on counts
+        const healthyPill = document.getElementById('healthyPill');
+        const degradedPill = document.getElementById('degradedPill');
+        const downPill = document.getElementById('downPill');
+
+        healthyPill.style.opacity = healthy === 0 ? '0.5' : '1';
+        degradedPill.style.opacity = degraded === 0 ? '0.5' : '1';
+        downPill.style.opacity = down === 0 ? '0.5' : '1';
+      }
+
+      viewService(id) {
+        const service = this.services.find(s => s.id === id);
+        if (!service) return;
+
+        const modal = document.getElementById('serviceModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalBody = document.getElementById('modalBody');
+
+        modalTitle.textContent = `${service.name} - Details`;
+        modalBody.innerHTML = `
+          <div style="display: grid; gap: 32px;">
+            <div>
+              <h3 style="font-size: 1.25rem; margin-bottom: 16px; color: var(--text-primary); display: flex; align-items: center; gap: 12px;">
+                <div class="service-status ${service.status}" style="position: relative; top: 0; right: 0;"></div>
+                Service Overview
+              </h3>
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
+                <div>
+                  <label style="font-size: 0.875rem; color: var(--text-muted);">Service ID</label>
+                  <div style="font-family: 'SF Mono', monospace; font-weight: 600; margin-top: 4px;">${service.id}</div>
+                </div>
+                <div>
+                  <label style="font-size: 0.875rem; color: var(--text-muted);">Status</label>
+                  <div style="margin-top: 4px;">
+                    <span class="badge ${service.status === 'healthy' ? 'severity-badge severity-low' : service.status === 'degraded' ? 'severity-badge severity-medium' : 'severity-badge severity-high'}" 
+                          style="display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px;">
+                      <i class="fas fa-circle" style="font-size: 0.6rem;"></i>
+                      ${service.status.charAt(0).toUpperCase() + service.status.slice(1)}
+                    </span>
+                  </div>
+                </div>
+                <div>
+                  <label style="font-size: 0.875rem; color: var(--text-muted);">Environment</label>
+                  <div style="font-weight: 600; margin-top: 4px;">${service.environment}</div>
+                </div>
+                <div>
+                  <label style="font-size: 0.875rem; color: var(--text-muted);">Team</label>
+                  <div style="font-weight: 600; margin-top: 4px;">${service.team}</div>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <h3 style="font-size: 1.25rem; margin-bottom: 16px; color: var(--text-primary);">
+                <i class="fas fa-chart-line"></i>
+                Performance Metrics
+              </h3>
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px;">
+                <div style="text-align: center; padding: 16px; background: rgba(0, 0, 0, 0.2); border-radius: 8px;">
+                  <div style="font-size: 1.75rem; font-weight: 800; color: var(--success);">${service.uptime}</div>
+                  <div style="font-size: 0.75rem; color: var(--text-muted);">Uptime</div>
+                </div>
+                <div style="text-align: center; padding: 16px; background: rgba(0, 0, 0, 0.2); border-radius: 8px;">
+                  <div style="font-size: 1.75rem; font-weight: 800; color: var(--primary);">${service.latency}</div>
+                  <div style="font-size: 0.75rem; color: var(--text-muted);">Latency</div>
+                </div>
+                <div style="text-align: center; padding: 16px; background: rgba(0, 0, 0, 0.2); border-radius: 8px;">
+                  <div style="font-size: 1.75rem; font-weight: 800; color: ${service.responseTime < 100 ? 'var(--success)' : service.responseTime < 200 ? 'var(--warning)' : 'var(--danger)'}">${service.responseTime}ms</div>
+                  <div style="font-size: 0.75rem; color: var(--text-muted);">Response Time</div>
+                </div>
+                <div style="text-align: center; padding: 16px; background: rgba(0, 0, 0, 0.2); border-radius: 8px;">
+                  <div style="font-size: 1.75rem; font-weight: 800; color: ${service.errorRate < 1 ? 'var(--success)' : service.errorRate < 5 ? 'var(--warning)' : 'var(--danger)'}">${service.errorRate}%</div>
+                  <div style="font-size: 0.75rem; color: var(--text-muted);">Error Rate</div>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <h3 style="font-size: 1.25rem; margin-bottom: 16px; color: var(--text-primary);">
+                <i class="fas fa-info-circle"></i>
+                Description
+              </h3>
+              <p style="color: var(--text-secondary); line-height: 1.6; background: rgba(0, 0, 0, 0.2); padding: 16px; border-radius: 8px;">
+                ${service.description}
+              </p>
+            </div>
+
+            <div>
+              <h3 style="font-size: 1.25rem; margin-bottom: 16px; color: var(--text-primary);">
+                <i class="fas fa-history"></i>
+                Recent Activity
+              </h3>
+              <div style="color: var(--text-secondary);">
+                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
+                  <i class="far fa-clock"></i>
+                  <span>Last incident: ${service.lastIncident}</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 12px;">
+                  <i class="fas fa-sync-alt"></i>
+                  <span>Last updated: ${this.getTimeAgo(service.lastUpdated)}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+
+        modal.style.display = 'flex';
+      }
+
+      viewMetrics(id) {
+        this.showToast(`Opening metrics dashboard for service: ${id}`, 'info');
+      }
+
+      editService(id) {
+        const service = this.services.find(s => s.id === id);
+        if (service) {
+          this.showToast(`Opening configuration for ${service.name}`, 'info');
+        }
+      }
+
+      showAddServiceModal() {
+        this.showToast('Add service form would open here', 'info');
+      }
+
+      filterByStatus(status) {
+        this.statusFilter = status;
+        if (status === 'all') {
+          this.filteredServices = [...this.services];
+        } else {
+          this.filteredServices = this.services.filter(s => s.status === status);
+        }
+        this.renderServices();
+      }
+
+      getTimeAgo(date) {
+        const now = new Date();
+        const diffMs = now - new Date(date);
+        const diffMins = Math.floor(diffMs / 60000);
+        const diffHours = Math.floor(diffMs / 3600000);
+        
+        if (diffMins < 60) {
+          return `${diffMins} minute${diffMins !== 1 ? 's' : ''} ago`;
+        } else if (diffHours < 24) {
+          return `${diffHours} hour${diffHours !== 1 ? 's' : ''} ago`;
+        } else {
+          const diffDays = Math.floor(diffMs / 86400000);
+          return `${diffDays} day${diffDays !== 1 ? 's' : ''} ago`;
+        }
+      }
+
+      showToast(message, type = 'info') {
+        const container = document.getElementById('toastContainer');
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        toast.innerHTML = `
+          <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : type === 'warning' ? 'exclamation-triangle' : 'info-circle'}"></i>
+          <span>${message}</span>
+        `;
+        
+        container.appendChild(toast);
+        
+        setTimeout(() => {
+          toast.style.animation = 'slideInRight 0.3s ease reverse';
+          setTimeout(() => toast.remove(), 300);
+        }, 4000);
+      }
+
+      setupEventListeners() {
+        // Mobile menu toggle
+        document.getElementById('menuToggle').addEventListener('click', () => {
+          document.getElementById('sidebar').classList.toggle('active');
+        });
+
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener('click', (e) => {
+          const sidebar = document.getElementById('sidebar');
+          const menuToggle = document.getElementById('menuToggle');
           
-          <div class="service-metrics">
-            <div class="metric">
-              <div class="metric-value">${service.uptime}</div>
-              <div class="metric-label">Uptime</div>
-            </div>
-            <div class="metric">
-              <div class="metric-value">${service.latency}</div>
-              <div class="metric-label">Latency</div>
-            </div>
-          </div>
-          
-          <div>
-            <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-muted);">
-              <span>Uptime Trend</span>
-              <span>Last 30 days</span>
-            </div>
-            <div class="uptime-chart">
-              <div class="uptime-fill ${service.status}" style="width: ${getUptimeWidth(service.uptime)}"></div>
-            </div>
-          </div>
-          
-          <div class="dependency-list">
-            <div style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 8px;">Dependencies</div>
-            <div class="dependency-item">
-              <div class="dependency-status healthy"></div>
-              <span>API Gateway</span>
-            </div>
-            <div class="dependency-item">
-              <div class="dependency-status healthy"></div>
-              <span>Database</span>
-            </div>
-            <div class="dependency-item">
-              <div class="dependency-status ${service.status === 'degraded' ? 'degraded' : 'healthy'}"></div>
-              <span>Cache Layer</span>
-            </div>
-          </div>
-          
-          <div class="service-actions">
-            <button class="btn btn-secondary" style="flex: 1;" onclick="viewService('${service.id}')">
-              <i class="fas fa-chart-line"></i> Metrics
-            </button>
-            <button class="btn btn-secondary" style="flex: 1;" onclick="editService('${service.id}')">
-              <i class="fas fa-cog"></i> Configure
-            </button>
-          </div>
-          
-          <div style="margin-top: 12px; font-size: 0.75rem; color: var(--text-muted);">
-            <i class="far fa-clock"></i> Last incident: ${service.lastIncident}
-          </div>
-        </div>
-      `).join('');
+          if (window.innerWidth <= 1024 && 
+              !sidebar.contains(e.target) && 
+              e.target !== menuToggle && 
+              !menuToggle.contains(e.target)) {
+            sidebar.classList.remove('active');
+          }
+        });
+
+        // Quick actions
+        document.getElementById('addServiceBtn').addEventListener('click', () => this.showAddServiceModal());
+        document.getElementById('refreshBtn').addEventListener('click', () => this.loadServices());
+        document.getElementById('exportBtn').addEventListener('click', () => {
+          this.showToast('Exporting services data...', 'success');
+        });
+        document.getElementById('bulkEditBtn').addEventListener('click', () => {
+          this.showToast('Bulk edit mode activated', 'info');
+        });
+
+        // Status filter pills
+        document.getElementById('healthyPill').addEventListener('click', () => this.filterByStatus('healthy'));
+        document.getElementById('degradedPill').addEventListener('click', () => this.filterByStatus('degraded'));
+        document.getElementById('downPill').addEventListener('click', () => this.filterByStatus('down'));
+
+        // Modal close
+        document.getElementById('closeModal').addEventListener('click', () => {
+          document.getElementById('serviceModal').style.display = 'none';
+        });
+
+        document.getElementById('serviceModal').addEventListener('click', (e) => {
+          if (e.target === document.getElementById('serviceModal')) {
+            document.getElementById('serviceModal').style.display = 'none';
+          }
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape') {
+            document.getElementById('serviceModal').style.display = 'none';
+          }
+          if (e.key === 'r' && e.ctrlKey) {
+            e.preventDefault();
+            this.loadServices();
+          }
+        });
+
+        // Simulate real-time updates
+        setInterval(() => {
+          // Randomly update service statuses for simulation
+          const randomService = this.services[Math.floor(Math.random() * this.services.length)];
+          if (Math.random() > 0.8) {
+            const oldStatus = randomService.status;
+            const statuses = ['healthy', 'degraded', 'down'];
+            randomService.status = statuses[Math.floor(Math.random() * statuses.length)];
+            randomService.lastUpdated = new Date();
+            
+            if (oldStatus !== randomService.status) {
+              this.renderServices();
+              this.updateStats();
+              this.showToast(`${randomService.name} status changed to ${randomService.status}`, 
+                           randomService.status === 'healthy' ? 'success' : 
+                           randomService.status === 'degraded' ? 'warning' : 'error');
+            }
+          }
+        }, 10000);
+      }
     }
 
-    function getUptimeWidth(uptimeStr) {
-      // Convert "99.95%" to width percentage
-      const uptime = parseFloat(uptimeStr);
-      return `${uptime}%`;
-    }
-
-    function setupEventListeners() {
-      document.getElementById('refreshServices').addEventListener('click', loadServices);
-      document.getElementById('addService').addEventListener('click', () => {
-        showToast('Add service form would open here', 'info');
-      });
-    }
-
-    function viewService(id) {
-      showToast(`Viewing metrics for service ${id}`, 'info');
-    }
-
-    function editService(id) {
-      showToast(`Editing service ${id}`, 'info');
-    }
+    // Initialize the services manager
+    const servicesManager = new ServicesManager();
   </script>
 </body>
 </html>

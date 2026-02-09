@@ -3,71 +3,372 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Incidents - Monitoring Dashboard</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <title>Incident Management - Monitoring Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="stylesheet" href="css/style.css">
   <style>
-    /* Center the main content */
-    .main {
-      max-width: 1400px;
-      margin: 0 auto;
-      width: 100%;
-      padding: 24px;
+    :root {
+      /* Modern color palette */
+      --bg-primary: #0f172a;
+      --bg-secondary: #1e293b;
+      --bg-card: rgba(30, 41, 59, 0.85);
+      --bg-accent: rgba(51, 65, 85, 0.5);
+      --text-primary: #f8fafc;
+      --text-secondary: #cbd5e1;
+      --text-muted: #94a3b8;
+      --border-color: rgba(100, 116, 139, 0.2);
+      --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
+      --shadow-lg: 0 20px 40px -10px rgba(0, 0, 0, 0.5);
+      --radius: 16px;
+      --radius-sm: 8px;
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      --open: #ef4444;
+      --acknowledged: #f59e0b;
+      --resolved: #10b981;
+      --low: #3b82f6;
+      --medium: #f59e0b;
+      --high: #ef4444;
+      --critical: #8b5cf6;
+      --primary: #3b82f6;
+      --primary-gradient: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --glass-bg: rgba(255, 255, 255, 0.05);
+      --glass-border: rgba(255, 255, 255, 0.1);
     }
 
-    /* Centered header */
-    .page-header {
-      text-align: center;
-      margin-bottom: 40px;
-      padding-bottom: 20px;
-      border-bottom: 1px solid var(--border-color);
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
 
-    .page-header h1 {
-      font-size: 2rem;
-      margin-bottom: 12px;
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      color: var(--text-primary);
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 100vh;
+      background: 
+        radial-gradient(circle at 20% 50%, rgba(59, 130, 246, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.1) 0%, transparent 50%);
+      z-index: -1;
+    }
+
+    /* Enhanced Sidebar */
+    .sidebar {
+      width: 280px;
+      background: rgba(15, 23, 42, 0.95);
+      backdrop-filter: blur(10px);
+      border-right: 1px solid var(--border-color);
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100vh;
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.3s ease;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 28px;
+      text-decoration: none;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .logo::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 28px;
+      right: 28px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--primary), transparent);
+    }
+
+    .logo-icon {
+      width: 44px;
+      height: 44px;
+      background: var(--primary-gradient);
+      border-radius: 12px;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 12px;
+      font-size: 20px;
+      box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
+      transition: var(--transition);
     }
 
-    .page-header .subtitle {
+    .logo:hover .logo-icon {
+      transform: rotate(15deg) scale(1.1);
+    }
+
+    .logo-text {
+      font-weight: 800;
+      font-size: 1.5rem;
+      background: linear-gradient(90deg, #60a5fa, #c4b5fd);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: -0.5px;
+    }
+
+    .nav {
+      padding: 28px 0;
+      flex: 1;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 16px 28px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: var(--transition);
+      position: relative;
+      margin: 4px 0;
+    }
+
+    .nav-item:hover {
+      background: var(--glass-bg);
+      color: var(--text-primary);
+      transform: translateX(8px);
+    }
+
+    .nav-item.active {
+      background: linear-gradient(90deg, rgba(59, 130, 246, 0.2), transparent);
+      border-left: 4px solid var(--primary);
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+
+    .nav-item.active::before {
+      content: '';
+      position: absolute;
+      right: 20px;
+      width: 8px;
+      height: 8px;
+      background: var(--primary);
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    .sidebar-footer {
+      padding: 28px;
+      border-top: 1px solid var(--border-color);
+    }
+
+    .user-profile {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      transition: var(--transition);
+    }
+
+    .user-profile:hover {
+      transform: translateY(-2px);
+    }
+
+    .user-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: var(--primary-gradient);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 1.1rem;
+      box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
+    }
+
+    .user-info h4 {
+      font-size: 0.95rem;
+      font-weight: 700;
+    }
+
+    .user-info p {
+      font-size: 0.85rem;
       color: var(--text-muted);
-      font-size: 1rem;
-      max-width: 600px;
-      margin: 0 auto;
     }
 
-    /* Centered filters card */
-    .filters-card {
-      background-color: var(--bg-card);
+    /* Main Content */
+    .main {
+      margin-left: 280px;
+      padding: 32px;
+      min-height: 100vh;
+    }
+
+    /* Enhanced Header */
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 32px;
+      padding: 28px;
+      background: var(--glass-bg);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--glass-border);
       border-radius: var(--radius);
-      padding: 30px;
-      margin: 0 auto 32px;
-      max-width: 1200px;
-      border: 1px solid var(--border-color);
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .page-header::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: var(--primary-gradient);
+    }
+
+    .header-content h1 {
+      font-size: 2rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      background: linear-gradient(90deg, #60a5fa, #fbbf24);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 8px;
+    }
+
+    .header-content p {
+      color: var(--text-muted);
+      max-width: 500px;
+    }
+
+    .header-stats {
+      display: flex;
+      gap: 20px;
+    }
+
+    .stat-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 20px;
+      backdrop-filter: blur(10px);
+    }
+
+    .stat-pill i {
+      font-size: 1.2rem;
+    }
+
+    .stat-pill.open i { color: var(--open); }
+    .stat-pill.acknowledged i { color: var(--acknowledged); }
+    .stat-pill.resolved i { color: var(--resolved); }
+
+    /* Quick Actions Bar */
+    .quick-actions {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 32px;
+      flex-wrap: wrap;
+    }
+
+    .action-btn {
+      padding: 14px 24px;
+      border-radius: var(--radius-sm);
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: var(--transition);
+      border: none;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .action-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: left 0.6s ease;
+    }
+
+    .action-btn:hover::before {
+      left: 100%;
+    }
+
+    .btn-primary {
+      background: var(--primary-gradient);
+      color: white;
+      box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 15px 30px rgba(59, 130, 246, 0.6);
+    }
+
+    .btn-secondary {
+      background: var(--glass-bg);
+      color: var(--text-primary);
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(10px);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(59, 130, 246, 0.1);
+      transform: translateY(-2px);
+    }
+
+    /* Enhanced Filters */
+    .filters-card {
+      background: var(--glass-bg);
+      backdrop-filter: blur(10px);
+      border-radius: var(--radius);
+      padding: 28px;
+      border: 1px solid var(--glass-border);
+      margin-bottom: 32px;
       box-shadow: var(--shadow);
     }
 
     .filters-header {
-      text-align: center;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       margin-bottom: 24px;
     }
 
     .filters-header h3 {
       font-size: 1.25rem;
-      margin-bottom: 8px;
-      color: var(--text-primary);
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
 
-    .filters-header p {
-      color: var(--text-muted);
-      font-size: 0.875rem;
-    }
-
-    /* Grid layout for filters */
     .filter-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -78,22 +379,23 @@
     .filter-group {
       display: flex;
       flex-direction: column;
+      gap: 8px;
     }
 
     .form-label {
-      display: block;
-      margin-bottom: 8px;
-      font-weight: 500;
-      color: var(--text-secondary);
       font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
 
     .form-control {
-      width: 100%;
       padding: 12px 16px;
-      background-color: var(--bg-accent);
+      background: var(--bg-secondary);
       border: 1px solid var(--border-color);
-      border-radius: 8px;
+      border-radius: var(--radius-sm);
       color: var(--text-primary);
       font-size: 0.875rem;
       transition: var(--transition);
@@ -107,144 +409,172 @@
 
     .filter-actions {
       display: flex;
-      justify-content: center;
       gap: 12px;
-      margin-top: 24px;
+      justify-content: flex-end;
     }
 
-    /* Centered table container */
+    /* Enhanced Table */
     .table-card {
-      background-color: var(--bg-card);
+      background: var(--glass-bg);
+      backdrop-filter: blur(10px);
       border-radius: var(--radius);
-      padding: 30px;
-      margin: 0 auto;
-      max-width: 1200px;
-      border: 1px solid var(--border-color);
+      padding: 28px;
+      border: 1px solid var(--glass-border);
       box-shadow: var(--shadow);
       overflow: hidden;
     }
 
     .table-header {
-      text-align: center;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       margin-bottom: 24px;
     }
 
     .table-header h3 {
       font-size: 1.25rem;
-      margin-bottom: 8px;
+      font-weight: 700;
     }
 
-    .table-header p {
-      color: var(--text-muted);
+    .search-box {
+      position: relative;
+      width: 300px;
+    }
+
+    .search-box input {
+      width: 100%;
+      padding: 12px 16px 12px 42px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      color: var(--text-primary);
       font-size: 0.875rem;
     }
 
-    /* Table styling */
+    .search-box i {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+    }
+
     .table-container {
       overflow-x: auto;
-      border-radius: 8px;
+      border-radius: var(--radius-sm);
       border: 1px solid var(--border-color);
+      background: var(--bg-secondary);
     }
 
     table {
       width: 100%;
       border-collapse: collapse;
-      min-width: 1000px;
+      min-width: 1200px;
     }
 
     thead {
-      background-color: var(--bg-accent);
+      background: var(--bg-primary);
+      position: sticky;
+      top: 0;
     }
 
     th {
-      padding: 16px;
+      padding: 18px 20px;
       text-align: left;
       font-weight: 600;
-      font-size: 0.875rem;
-      color: var(--text-secondary);
-      border-bottom: 1px solid var(--border-color);
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 2px solid var(--border-color);
     }
 
     td {
-      padding: 16px;
+      padding: 18px 20px;
       border-bottom: 1px solid var(--border-color);
       font-size: 0.875rem;
+      transition: var(--transition);
     }
 
     tbody tr {
       transition: var(--transition);
+      cursor: pointer;
     }
 
     tbody tr:hover {
-      background-color: var(--bg-accent);
+      background: var(--glass-bg);
     }
 
-    /* Badges */
+    tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    /* Enhanced Badges */
     .badge {
-      display: inline-block;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
       padding: 6px 12px;
       font-size: 0.75rem;
-      font-weight: 600;
+      font-weight: 700;
       border-radius: 20px;
       color: white;
-    }
-
-    .severity-badge {
       text-transform: uppercase;
       letter-spacing: 0.5px;
     }
 
-    .severity-low { background-color: var(--low); }
-    .severity-medium { background-color: var(--medium); }
-    .severity-high { background-color: var(--high); }
-    .severity-critical { background-color: var(--critical); }
+    .severity-badge {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .severity-low { 
+      background: linear-gradient(135deg, var(--low), #60a5fa);
+    }
+    .severity-medium { 
+      background: linear-gradient(135deg, var(--medium), #fbbf24);
+    }
+    .severity-high { 
+      background: linear-gradient(135deg, var(--high), #f87171);
+    }
+    .severity-critical { 
+      background: linear-gradient(135deg, var(--critical), #a78bfa);
+    }
 
     .status-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .status-open { background-color: var(--open); }
-    .status-acknowledged { background-color: var(--acknowledged); }
-    .status-resolved { background-color: var(--resolved); }
-
-    /* Action buttons */
-    .incident-actions {
-      display: flex;
-      gap: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      min-width: 120px;
       justify-content: center;
     }
 
-    .action-icon {
-      width: 32px;
-      height: 32px;
-      border-radius: 6px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background-color: var(--bg-accent);
-      color: var(--text-primary);
-      cursor: pointer;
-      transition: var(--transition);
-      border: none;
+    .status-open { 
+      background: linear-gradient(135deg, var(--open), #f87171);
+    }
+    .status-acknowledged { 
+      background: linear-gradient(135deg, var(--acknowledged), #fbbf24);
+    }
+    .status-resolved { 
+      background: linear-gradient(135deg, var(--resolved), #34d399);
     }
 
-    .action-icon:hover {
-      background-color: var(--primary);
-      color: white;
-      transform: translateY(-2px);
-    }
-
-    /* Centered pagination */
+    /* Enhanced Pagination */
     .pagination {
       display: flex;
-      justify-content: center;
+      justify-content: space-between;
       align-items: center;
-      gap: 8px;
       margin-top: 32px;
       padding-top: 24px;
       border-top: 1px solid var(--border-color);
+    }
+
+    .page-info {
+      color: var(--text-muted);
+      font-size: 0.875rem;
+    }
+
+    .page-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
 
     .page-btn {
@@ -254,102 +584,259 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      background-color: var(--bg-accent);
+      background: var(--bg-secondary);
       color: var(--text-primary);
-      border: none;
+      border: 1px solid var(--border-color);
       cursor: pointer;
       transition: var(--transition);
       font-weight: 500;
     }
 
     .page-btn.active {
-      background-color: var(--primary);
+      background: var(--primary-gradient);
       color: white;
+      border: none;
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
     }
 
     .page-btn:hover:not(.active) {
-      background-color: var(--border-color);
+      background: var(--glass-bg);
       transform: translateY(-2px);
     }
 
-    /* Empty state */
-    .empty-state {
-      text-align: center;
-      padding: 60px 20px;
-      color: var(--text-muted);
-    }
-
-    .empty-state-icon {
-      font-size: 4rem;
-      margin-bottom: 20px;
+    .page-btn:disabled {
       opacity: 0.5;
+      cursor: not-allowed;
     }
 
-    /* Buttons */
-    .btn {
-      padding: 10px 20px;
-      border-radius: 8px;
-      font-weight: 600;
-      font-size: 0.875rem;
-      cursor: pointer;
-      transition: var(--transition);
-      border: none;
-      display: inline-flex;
-      align-items: center;
+    .page-btn:disabled:hover {
+      transform: none;
+      background: var(--bg-secondary);
+    }
+
+    /* Incident Actions */
+    .incident-actions {
+      display: flex;
       gap: 8px;
     }
 
-    .btn-primary {
-      background-color: var(--primary);
-      color: white;
-    }
-
-    .btn-primary:hover {
-      background-color: #2563eb;
-      transform: translateY(-2px);
-    }
-
-    .btn-secondary {
-      background-color: var(--bg-accent);
+    .action-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--glass-bg);
       color: var(--text-primary);
+      border: 1px solid var(--glass-border);
+      cursor: pointer;
+      transition: var(--transition);
     }
 
-    .btn-secondary:hover {
-      background-color: #475569;
-      transform: translateY(-2px);
+    .action-icon:hover {
+      background: var(--primary);
+      color: white;
+      transform: translateY(-2px) scale(1.1);
+      box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
     }
 
-    /* Responsive design */
-    @media (max-width: 1200px) {
+    /* Enhanced Modal */
+    .incident-detail-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(15, 23, 42, 0.9);
+      backdrop-filter: blur(10px);
+      z-index: 2000;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .modal-content {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 90%;
+      max-width: 800px;
+      max-height: 90vh;
+      overflow-y: auto;
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      border-radius: var(--radius);
+      border: 1px solid var(--glass-border);
+      box-shadow: var(--shadow-lg);
+      animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    @keyframes slideUp {
+      from { 
+        transform: translate(-50%, -40%);
+        opacity: 0;
+      }
+      to { 
+        transform: translate(-50%, -50%);
+        opacity: 1;
+      }
+    }
+
+    .modal-header {
+      padding: 28px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-header h2 {
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 2rem;
+      cursor: pointer;
+      transition: var(--transition);
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+    }
+
+    .modal-close:hover {
+      color: var(--text-primary);
+      background: var(--glass-bg);
+    }
+
+    .modal-body {
+      padding: 28px;
+    }
+
+    /* Toast Notifications */
+    .toast-container {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 3000;
+    }
+
+    .toast {
+      padding: 16px 24px;
+      margin-top: 12px;
+      border-radius: var(--radius-sm);
+      color: white;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      animation: slideInRight 0.3s ease;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    @keyframes slideInRight {
+      from {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    .toast.success {
+      background: linear-gradient(135deg, var(--success), #34d399);
+    }
+
+    .toast.error {
+      background: linear-gradient(135deg, var(--danger), #f87171);
+    }
+
+    .toast.warning {
+      background: linear-gradient(135deg, var(--warning), #fbbf24);
+    }
+
+    .toast.info {
+      background: linear-gradient(135deg, var(--primary), #60a5fa);
+    }
+
+    /* Loading States */
+    .skeleton {
+      background: linear-gradient(90deg, var(--bg-secondary) 25%, var(--bg-accent) 50%, var(--bg-secondary) 75%);
+      background-size: 200% 100%;
+      animation: loading 1.5s infinite;
+      border-radius: 4px;
+    }
+
+    @keyframes loading {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    /* Responsive Design */
+    @media (max-width: 1024px) {
+      .sidebar {
+        transform: translateX(-100%);
+      }
+      
+      .sidebar.active {
+        transform: translateX(0);
+      }
+      
       .main {
+        margin-left: 0;
         padding: 20px;
       }
       
-      .filters-card,
-      .table-card {
-        margin: 0 20px;
-        max-width: calc(100% - 40px);
+      .menu-toggle {
+        display: flex !important;
       }
     }
 
     @media (max-width: 768px) {
-      .filter-grid {
-        grid-template-columns: 1fr;
+      .header-stats {
+        flex-direction: column;
+        gap: 12px;
       }
       
-      .page-header h1 {
-        font-size: 1.5rem;
+      .quick-actions {
         flex-direction: column;
-        gap: 8px;
+      }
+      
+      .filter-grid {
+        grid-template-columns: 1fr;
       }
       
       .filter-actions {
         flex-direction: column;
       }
       
-      .btn {
+      .table-header {
+        flex-direction: column;
+        gap: 16px;
+        align-items: stretch;
+      }
+      
+      .search-box {
         width: 100%;
-        justify-content: center;
+      }
+      
+      .pagination {
+        flex-direction: column;
+        gap: 16px;
       }
     }
 
@@ -358,44 +845,151 @@
         padding: 16px;
       }
       
-      .filters-card,
-      .table-card {
+      .page-header {
         padding: 20px;
-        margin: 0 10px;
-        max-width: calc(100% - 20px);
       }
       
-      .pagination {
-        flex-wrap: wrap;
+      .table-card {
+        padding: 20px;
       }
     }
 
-    /* Animation for table rows */
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(10px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+    /* Mobile Menu Toggle */
+    .menu-toggle {
+      display: none;
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      z-index: 1001;
+      background: var(--primary-gradient);
+      color: white;
+      width: 56px;
+      height: 56px;
+      border-radius: 12px;
+      border: none;
+      cursor: pointer;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      box-shadow: var(--shadow);
+      transition: var(--transition);
     }
 
-    tbody tr {
-      animation: fadeIn 0.3s ease-out;
+    .menu-toggle:hover {
+      transform: scale(1.1);
     }
 
-    tbody tr:nth-child(1) { animation-delay: 0.1s; }
-    tbody tr:nth-child(2) { animation-delay: 0.2s; }
-    tbody tr:nth-child(3) { animation-delay: 0.3s; }
-    tbody tr:nth-child(4) { animation-delay: 0.4s; }
-    tbody tr:nth-child(5) { animation-delay: 0.5s; }
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--bg-secondary);
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--primary-gradient);
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: linear-gradient(135deg, #2563eb, #7c3aed);
+    }
+
+    /* Animations */
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    /* Utility Classes */
+    .text-truncate {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      max-width: 200px;
+    }
+
+    .text-muted {
+      color: var(--text-muted);
+    }
+
+    .text-success {
+      color: var(--success);
+    }
+
+    .text-warning {
+      color: var(--warning);
+    }
+
+    .text-danger {
+      color: var(--danger);
+    }
+
+    .text-primary {
+      color: var(--primary);
+    }
+
+    .mb-4 {
+      margin-bottom: 1rem;
+    }
+
+    .mb-8 {
+      margin-bottom: 2rem;
+    }
+
+    .mt-4 {
+      margin-top: 1rem;
+    }
+
+    .mt-8 {
+      margin-top: 2rem;
+    }
+
+    .gap-4 {
+      gap: 1rem;
+    }
+
+    .gap-8 {
+      gap: 2rem;
+    }
+
+    .flex {
+      display: flex;
+    }
+
+    .flex-col {
+      flex-direction: column;
+    }
+
+    .items-center {
+      align-items: center;
+    }
+
+    .justify-between {
+      justify-content: space-between;
+    }
+
+    .justify-center {
+      justify-content: center;
+    }
+
+    .w-full {
+      width: 100%;
+    }
   </style>
 </head>
 <body>
-  <!-- Sidebar Navigation -->
-  <div class="sidebar">
+  <!-- Mobile Menu Toggle -->
+  <button class="menu-toggle" id="menuToggle">
+    <i class="fas fa-bars"></i>
+  </button>
+
+  <!-- Sidebar -->
+  <div class="sidebar" id="sidebar">
     <a href="index.html" class="logo">
       <div class="logo-icon">
         <i class="fas fa-shield-alt"></i>
@@ -405,59 +999,101 @@
 
     <nav class="nav">
       <a href="index.html" class="nav-item">
-        <div class="nav-icon"><i class="fas fa-tachometer-alt"></i></div>
-        <span class="nav-text">Overview</span>
+        <i class="fas fa-tachometer-alt"></i>
+        <span>Overview</span>
       </a>
       <a href="incidents.html" class="nav-item active">
-        <div class="nav-icon"><i class="fas fa-exclamation-triangle"></i></div>
-        <span class="nav-text">Incidents</span>
+        <i class="fas fa-exclamation-triangle"></i>
+        <span>Incidents</span>
       </a>
       <a href="services.html" class="nav-item">
-        <div class="nav-icon"><i class="fas fa-server"></i></div>
-        <span class="nav-text">Services</span>
+        <i class="fas fa-server"></i>
+        <span>Services</span>
       </a>
       <a href="analytics.html" class="nav-item">
-        <div class="nav-icon"><i class="fas fa-chart-line"></i></div>
-        <span class="nav-text">Analytics</span>
+        <i class="fas fa-chart-line"></i>
+        <span>Analytics</span>
       </a>
       <a href="settings.html" class="nav-item">
-        <div class="nav-icon"><i class="fas fa-cog"></i></div>
-        <span class="nav-text">Settings</span>
+        <i class="fas fa-cog"></i>
+        <span>Settings</span>
       </a>
     </nav>
 
     <div class="sidebar-footer">
       <div class="user-profile">
-        <div class="user-avatar">JD</div>
+        <div class="user-avatar">SE</div>
         <div class="user-info">
-          <h4>John Doe</h4>
-          <p>Admin</p>
+          <h4>Saad Elhor</h4>
+          <p>Administrator</p>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Main Content Area - Centered -->
+  <!-- Main Content -->
   <div class="main">
     <!-- Page Header -->
     <div class="page-header">
-      <h1>
-        <i class="fas fa-exclamation-triangle" style="color: #f59e0b;"></i>
-        Incident Management
-      </h1>
-      <p class="subtitle">Monitor, track, and manage all system incidents from a centralized dashboard</p>
+      <div class="header-content">
+        <h1>
+          <i class="fas fa-exclamation-triangle"></i>
+          Incident Management
+        </h1>
+        <p>Monitor, track, and resolve system incidents in real-time</p>
+      </div>
+      <div class="header-stats">
+        <div class="stat-pill open">
+          <i class="fas fa-exclamation-circle"></i>
+          <span><strong id="openCount">8</strong> Open</span>
+        </div>
+        <div class="stat-pill acknowledged">
+          <i class="fas fa-user-check"></i>
+          <span><strong id="acknowledgedCount">6</strong> Acknowledged</span>
+        </div>
+        <div class="stat-pill resolved">
+          <i class="fas fa-check-circle"></i>
+          <span><strong id="resolvedCount">10</strong> Resolved</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="quick-actions">
+      <button class="action-btn btn-primary" id="newIncidentBtn">
+        <i class="fas fa-plus"></i>
+        Report New Incident
+      </button>
+      <button class="action-btn btn-secondary" id="bulkActionsBtn">
+        <i class="fas fa-layer-group"></i>
+        Bulk Actions
+      </button>
+      <button class="action-btn btn-secondary" id="exportBtn">
+        <i class="fas fa-file-export"></i>
+        Export Data
+      </button>
+      <button class="action-btn btn-secondary" id="refreshBtn">
+        <i class="fas fa-sync-alt"></i>
+        Refresh
+      </button>
     </div>
 
     <!-- Filters Card -->
     <div class="filters-card">
       <div class="filters-header">
-        <h3>Filter Incidents</h3>
-        <p>Narrow down incidents by status, severity, service, or date range</p>
+        <h3><i class="fas fa-filter"></i> Filter Incidents</h3>
+        <button class="action-btn btn-secondary" id="toggleFilters">
+          <i class="fas fa-sliders-h"></i>
+          Advanced Filters
+        </button>
       </div>
 
       <div class="filter-grid">
         <div class="filter-group">
-          <label class="form-label">Status</label>
+          <label class="form-label">
+            <i class="fas fa-tag"></i>
+            Status
+          </label>
           <select class="form-control" id="statusFilter">
             <option value="">All Statuses</option>
             <option value="open">Open</option>
@@ -467,7 +1103,10 @@
         </div>
         
         <div class="filter-group">
-          <label class="form-label">Severity</label>
+          <label class="form-label">
+            <i class="fas fa-fire"></i>
+            Severity
+          </label>
           <select class="form-control" id="severityFilter">
             <option value="">All Severities</option>
             <option value="low">Low</option>
@@ -478,39 +1117,43 @@
         </div>
         
         <div class="filter-group">
-          <label class="form-label">Service</label>
+          <label class="form-label">
+            <i class="fas fa-server"></i>
+            Service
+          </label>
           <select class="form-control" id="serviceFilter">
             <option value="">All Services</option>
             <option value="API Gateway">API Gateway</option>
             <option value="Database Cluster">Database Cluster</option>
-            <option value="Authentication Service">Authentication Service</option>
-            <option value="Payment Processing">Payment Processing</option>
+            <option value="Authentication">Authentication Service</option>
+            <option value="Payment">Payment Processing</option>
+            <option value="CDN">CDN Edge</option>
           </select>
         </div>
         
         <div class="filter-group">
-          <label class="form-label">Date Range</label>
+          <label class="form-label">
+            <i class="fas fa-calendar"></i>
+            Date Range
+          </label>
           <select class="form-control" id="dateFilter">
             <option value="24h">Last 24 hours</option>
-            <option value="7d">Last 7 days</option>
+            <option value="7d" selected>Last 7 days</option>
             <option value="30d">Last 30 days</option>
+            <option value="90d">Last 90 days</option>
             <option value="all">All time</option>
           </select>
         </div>
       </div>
 
       <div class="filter-actions">
-        <button class="btn btn-secondary" id="applyFilters">
-          <i class="fas fa-filter"></i> Apply Filters
+        <button class="action-btn btn-secondary" id="clearFilters">
+          <i class="fas fa-times"></i>
+          Clear All
         </button>
-        <button class="btn btn-secondary" id="clearFilters">
-          <i class="fas fa-times"></i> Clear Filters
-        </button>
-        <button class="btn btn-primary" id="newIncidentBtn">
-          <i class="fas fa-plus"></i> New Incident
-        </button>
-        <button class="btn btn-secondary" id="exportBtn">
-          <i class="fas fa-download"></i> Export Data
+        <button class="action-btn btn-primary" id="applyFilters">
+          <i class="fas fa-check"></i>
+          Apply Filters
         </button>
       </div>
     </div>
@@ -518,52 +1161,63 @@
     <!-- Table Card -->
     <div class="table-card">
       <div class="table-header">
-        <h3>Recent Incidents</h3>
-        <p>All incidents are displayed below. Click on any incident for detailed view</p>
+        <h3>Active Incidents</h3>
+        <div class="search-box">
+          <i class="fas fa-search"></i>
+          <input type="text" id="searchInput" placeholder="Search incidents...">
+        </div>
       </div>
 
       <div class="table-container">
         <table id="incidentsTable">
           <thead>
             <tr>
-              <th>ID</th>
-              <th>Service</th>
+              <th width="120">ID</th>
+              <th width="200">Service</th>
               <th>Description</th>
-              <th>Severity</th>
-              <th>Status</th>
-              <th>Created</th>
-              <th>Actions</th>
+              <th width="120">Severity</th>
+              <th width="140">Status</th>
+              <th width="150">Created</th>
+              <th width="160">Actions</th>
             </tr>
           </thead>
           <tbody id="incidentsTableBody">
             <!-- Will be populated by JavaScript -->
-            <tr>
-              <td colspan="7" class="empty-state">
-                <div class="empty-state-icon">
-                  <i class="fas fa-spinner fa-spin"></i>
-                </div>
-                <h4>Loading incidents...</h4>
-                <p>Please wait while we fetch the latest incidents</p>
-              </td>
-            </tr>
           </tbody>
         </table>
       </div>
 
-      <!-- Pagination -->
       <div class="pagination">
-        <button class="page-btn" id="prevPage"><i class="fas fa-chevron-left"></i></button>
-        <button class="page-btn active">1</button>
-        <button class="page-btn">2</button>
-        <button class="page-btn">3</button>
-        <span style="color: var(--text-muted); padding: 0 8px;">...</span>
-        <button class="page-btn">10</button>
-        <button class="page-btn" id="nextPage"><i class="fas fa-chevron-right"></i></button>
+        <div class="page-info">
+          Showing <span id="startRow">1</span>-<span id="endRow">10</span> of <span id="totalRows">24</span> incidents
+        </div>
+        <div class="page-controls">
+          <button class="page-btn" id="firstPage" title="First Page">
+            <i class="fas fa-angle-double-left"></i>
+          </button>
+          <button class="page-btn" id="prevPage" title="Previous Page">
+            <i class="fas fa-chevron-left"></i>
+          </button>
+          <button class="page-btn active">1</button>
+          <button class="page-btn">2</button>
+          <button class="page-btn">3</button>
+          <span class="text-muted">...</span>
+          <button class="page-btn">5</button>
+          <button class="page-btn" id="nextPage" title="Next Page">
+            <i class="fas fa-chevron-right"></i>
+          </button>
+          <button class="page-btn" id="lastPage" title="Last Page">
+            <i class="fas fa-angle-double-right"></i>
+          </button>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- Incident Detail Modal (unchanged) -->
+  <!-- Toast Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Incident Detail Modal -->
   <div class="incident-detail-modal" id="incidentModal">
     <div class="modal-content">
       <div class="modal-header">
@@ -576,260 +1230,589 @@
     </div>
   </div>
 
-  <script src="js/app.js"></script>
   <script>
-    // Page-specific JavaScript
-    document.addEventListener('DOMContentLoaded', () => {
-      // Set active nav item
-      document.querySelector('a[href="incidents.html"]').classList.add('active');
-      
-      loadIncidents();
-      setupEventListeners();
-    });
-
-    async function loadIncidents() {
-      try {
-        // Try to fetch from API
-        const response = await fetch("/api/v1/incidents");
-        const incidents = await response.json();
-        renderIncidentsTable(incidents);
-      } catch (err) {
-        // Fallback to sample data
-        console.warn("API unavailable, using sample data:", err);
-        const sampleIncidents = [
-          {
-            id: "INC-2023-00142",
-            service: "API Gateway",
-            severity: "high",
-            status: "open",
-            created_at: "2023-10-15T14:30:00Z",
-            description: "Increased latency across all endpoints"
-          },
-          {
-            id: "INC-2023-00141",
-            service: "Database Cluster",
-            severity: "critical",
-            status: "acknowledged",
-            created_at: "2023-10-15T12:15:00Z",
-            description: "Primary node failure detected"
-          },
-          {
-            id: "INC-2023-00140",
-            service: "Authentication Service",
-            severity: "medium",
-            status: "resolved",
-            created_at: "2023-10-14T22:45:00Z",
-            description: "Intermittent login failures"
-          },
-          {
-            id: "INC-2023-00139",
-            service: "CDN Edge",
-            severity: "low",
-            status: "open",
-            created_at: "2023-10-14T18:20:00Z",
-            description: "Cache miss rate increased by 15%"
-          },
-          {
-            id: "INC-2023-00138",
-            service: "Payment Processing",
-            severity: "high",
-            status: "acknowledged",
-            created_at: "2023-10-14T10:05:00Z",
-            description: "Transaction timeout errors"
-          }
-        ];
-        renderIncidentsTable(sampleIncidents);
+    // Enhanced Incident Management System
+    class IncidentManager {
+      constructor() {
+        this.incidents = [];
+        this.filteredIncidents = [];
+        this.currentPage = 1;
+        this.pageSize = 10;
+        this.filters = {};
+        this.init();
       }
-    }
 
-    function renderIncidentsTable(incidents) {
-      const tbody = document.getElementById('incidentsTableBody');
-      
-      if (!incidents.length) {
+      async init() {
+        this.setupEventListeners();
+        await this.loadIncidents();
+        this.renderTable();
+        this.updateStats();
+      }
+
+      async loadIncidents() {
+        // Show loading state
+        this.showLoadingState();
+        
+        try {
+          // In a real app, this would be an API call
+          // For now, use sample data with delay to simulate network
+          await new Promise(resolve => setTimeout(resolve, 800));
+          
+          this.incidents = [
+            {
+              id: 'INC-2023-08754',
+              service: 'API Gateway',
+              severity: 'high',
+              status: 'open',
+              description: 'Increased latency in API responses exceeding 2-second threshold',
+              created: new Date(Date.now() - 45 * 60000),
+              assignedTo: 'Network Team',
+              affectedServices: ['User Service', 'Payment Service'],
+              updates: 3,
+              sla: 'P1',
+              priority: 'High'
+            },
+            {
+              id: 'INC-2023-08753',
+              service: 'Database Cluster',
+              severity: 'critical',
+              status: 'acknowledged',
+              description: 'Primary database node failure, failover to secondary initiated',
+              created: new Date(Date.now() - 2 * 3600000),
+              assignedTo: 'DBA Team',
+              affectedServices: ['All Services'],
+              updates: 12,
+              sla: 'P0',
+              priority: 'Critical'
+            },
+            {
+              id: 'INC-2023-08752',
+              service: 'Authentication Service',
+              severity: 'medium',
+              status: 'resolved',
+              description: 'Intermittent authentication failures for mobile users',
+              created: new Date(Date.now() - 8 * 3600000),
+              resolved: new Date(Date.now() - 3600000),
+              assignedTo: 'Security Team',
+              affectedServices: ['Mobile App', 'Web Portal'],
+              updates: 5,
+              sla: 'P2',
+              priority: 'Medium'
+            },
+            {
+              id: 'INC-2023-08751',
+              service: 'CDN Edge Locations',
+              severity: 'low',
+              status: 'open',
+              description: 'Increased cache miss rate in Asia-Pacific region',
+              created: new Date(Date.now() - 90 * 60000),
+              assignedTo: 'Infrastructure Team',
+              affectedServices: ['Static Assets', 'Media Files'],
+              updates: 2,
+              sla: 'P3',
+              priority: 'Low'
+            },
+            {
+              id: 'INC-2023-08750',
+              service: 'Payment Processing',
+              severity: 'high',
+              status: 'acknowledged',
+              description: 'Third-party payment gateway integration timeout',
+              created: new Date(Date.now() - 3 * 3600000),
+              assignedTo: 'Payment Team',
+              affectedServices: ['Checkout Service', 'Order Service'],
+              updates: 8,
+              sla: 'P1',
+              priority: 'High'
+            },
+            {
+              id: 'INC-2023-08749',
+              service: 'Monitoring System',
+              severity: 'medium',
+              status: 'resolved',
+              description: 'Alert notification delays for non-critical events',
+              created: new Date(Date.now() - 12 * 3600000),
+              resolved: new Date(Date.now() - 2 * 3600000),
+              assignedTo: 'DevOps Team',
+              affectedServices: ['All Teams'],
+              updates: 6,
+              sla: 'P2',
+              priority: 'Medium'
+            },
+            {
+              id: 'INC-2023-08748',
+              service: 'Email Service',
+              severity: 'low',
+              status: 'open',
+              description: 'Delayed email delivery for bulk campaigns',
+              created: new Date(Date.now() - 4 * 3600000),
+              assignedTo: 'Marketing Team',
+              affectedServices: ['Campaign Service'],
+              updates: 1,
+              sla: 'P3',
+              priority: 'Low'
+            },
+            {
+              id: 'INC-2023-08747',
+              service: 'Load Balancer',
+              severity: 'critical',
+              status: 'acknowledged',
+              description: 'Uneven traffic distribution across nodes',
+              created: new Date(Date.now() - 6 * 3600000),
+              assignedTo: 'Infrastructure Team',
+              affectedServices: ['API Gateway', 'Web Servers'],
+              updates: 15,
+              sla: 'P0',
+              priority: 'Critical'
+            },
+            {
+              id: 'INC-2023-08746',
+              service: 'Cache Cluster',
+              severity: 'medium',
+              status: 'open',
+              description: 'Memory fragmentation causing performance degradation',
+              created: new Date(Date.now() - 5 * 3600000),
+              assignedTo: 'DevOps Team',
+              affectedServices: ['Application Cache'],
+              updates: 4,
+              sla: 'P2',
+              priority: 'Medium'
+            },
+            {
+              id: 'INC-2023-08745',
+              service: 'Mobile App API',
+              severity: 'high',
+              status: 'resolved',
+              description: 'Push notification service interruption',
+              created: new Date(Date.now() - 24 * 3600000),
+              resolved: new Date(Date.now() - 6 * 3600000),
+              assignedTo: 'Mobile Team',
+              affectedServices: ['Mobile App'],
+              updates: 9,
+              sla: 'P1',
+              priority: 'High'
+            }
+          ];
+          
+          this.filteredIncidents = [...this.incidents];
+          this.showToast('Incidents loaded successfully', 'success');
+        } catch (error) {
+          console.error('Failed to load incidents:', error);
+          this.showToast('Failed to load incidents', 'error');
+        }
+      }
+
+      showLoadingState() {
+        const tbody = document.getElementById('incidentsTableBody');
         tbody.innerHTML = `
           <tr>
-            <td colspan="7" class="empty-state">
-              <div class="empty-state-icon">
-                <i class="far fa-check-circle"></i>
+            <td colspan="7">
+              <div style="padding: 40px; text-align: center;">
+                <div class="skeleton" style="height: 24px; width: 120px; margin: 0 auto 12px;"></div>
+                <div class="skeleton" style="height: 16px; width: 80px; margin: 0 auto;"></div>
               </div>
-              <h4>No Incidents Found</h4>
-              <p>All systems are operating normally. No incidents reported.</p>
             </td>
           </tr>
         `;
-        return;
       }
 
-      tbody.innerHTML = incidents.map((incident, index) => `
-        <tr data-id="${incident.id}" style="animation-delay: ${index * 0.1}s">
-          <td><strong style="font-family: monospace;">${incident.id}</strong></td>
-          <td><strong>${incident.service}</strong></td>
-          <td style="max-width: 300px;">${incident.description}</td>
-          <td>
-            <span class="badge severity-badge severity-${incident.severity}">
-              ${incident.severity}
-            </span>
-          </td>
-          <td>
-            <span class="badge status-badge status-${incident.status}">
-              <i class="fas ${getStatusIcon(incident.status)}"></i>
-              ${incident.status}
-            </span>
-          </td>
-          <td>${getTimeAgo(incident.created_at)}</td>
-          <td>
-            <div class="incident-actions">
-              <button class="action-icon" onclick="viewIncident('${incident.id}')" title="View Details">
-                <i class="fas fa-eye"></i>
-              </button>
-              <button class="action-icon" onclick="editIncident('${incident.id}')" title="Edit">
-                <i class="fas fa-edit"></i>
-              </button>
-              <button class="action-icon" onclick="acknowledgeIncident('${incident.id}')" title="Acknowledge">
-                <i class="fas fa-user-check"></i>
-              </button>
-              <button class="action-icon" onclick="resolveIncident('${incident.id}')" title="Resolve">
-                <i class="fas fa-check"></i>
-              </button>
-            </div>
-          </td>
-        </tr>
-      `).join('');
-    }
-
-    function setupEventListeners() {
-      // Filter buttons
-      document.getElementById('applyFilters').addEventListener('click', applyFilters);
-      document.getElementById('clearFilters').addEventListener('click', clearFilters);
-      
-      // New incident button
-      document.getElementById('newIncidentBtn').addEventListener('click', () => {
-        showToast('Create incident form would open here', 'info');
-      });
-      
-      // Export button
-      document.getElementById('exportBtn').addEventListener('click', () => {
-        showToast('Exporting incidents data...', 'success');
-      });
-      
-      // Modal close button
-      document.getElementById('closeModal').addEventListener('click', () => {
-        document.getElementById('incidentModal').style.display = 'none';
-      });
-      
-      // Close modal when clicking outside
-      document.getElementById('incidentModal').addEventListener('click', (e) => {
-        if (e.target === document.getElementById('incidentModal')) {
-          document.getElementById('incidentModal').style.display = 'none';
+      renderTable() {
+        const tbody = document.getElementById('incidentsTableBody');
+        
+        if (this.filteredIncidents.length === 0) {
+          tbody.innerHTML = `
+            <tr>
+              <td colspan="7">
+                <div style="padding: 60px 20px; text-align: center;">
+                  <i class="fas fa-search" style="font-size: 3rem; color: var(--text-muted); margin-bottom: 16px;"></i>
+                  <h3 style="color: var(--text-primary); margin-bottom: 8px;">No incidents found</h3>
+                  <p style="color: var(--text-muted);">Try adjusting your filters or search criteria</p>
+                </div>
+              </td>
+            </tr>
+          `;
+          return;
         }
-      });
 
-      // Pagination
-      document.getElementById('prevPage').addEventListener('click', () => {
-        showToast('Loading previous page...', 'info');
-      });
+        const start = (this.currentPage - 1) * this.pageSize;
+        const end = start + this.pageSize;
+        const pageIncidents = this.filteredIncidents.slice(start, end);
 
-      document.getElementById('nextPage').addEventListener('click', () => {
-        showToast('Loading next page...', 'info');
-      });
-    }
+        tbody.innerHTML = pageIncidents.map(incident => `
+          <tr data-id="${incident.id}" onclick="incidentManager.viewIncident('${incident.id}')">
+            <td>
+              <strong style="font-family: 'SF Mono', monospace; color: var(--primary);">${incident.id}</strong>
+            </td>
+            <td>
+              <strong>${incident.service}</strong>
+              <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;">
+                ${incident.assignedTo}
+              </div>
+            </td>
+            <td>
+              <div style="font-weight: 500; margin-bottom: 4px;">${incident.description}</div>
+              <div style="font-size: 0.75rem; color: var(--text-muted);">
+                ${incident.affectedServices.length} service${incident.affectedServices.length !== 1 ? 's' : ''} affected
+              </div>
+            </td>
+            <td>
+              <span class="badge severity-badge severity-${incident.severity}">
+                <i class="fas fa-${incident.severity === 'critical' ? 'skull-crossbones' : 'fire'}"></i>
+                ${incident.severity}
+              </span>
+            </td>
+            <td>
+              <span class="badge status-badge status-${incident.status}">
+                <i class="fas fa-${this.getStatusIcon(incident.status)}"></i>
+                ${incident.status}
+              </span>
+            </td>
+            <td>
+              <div style="font-weight: 500;">${this.getTimeAgo(incident.created)}</div>
+              <div style="font-size: 0.75rem; color: var(--text-muted);">
+                ${incident.updates} update${incident.updates !== 1 ? 's' : ''}
+              </div>
+            </td>
+            <td>
+              <div class="incident-actions">
+                <button class="action-icon" onclick="event.stopPropagation(); incidentManager.viewIncident('${incident.id}')" title="View Details">
+                  <i class="fas fa-eye"></i>
+                </button>
+                <button class="action-icon" onclick="event.stopPropagation(); incidentManager.acknowledgeIncident('${incident.id}')" title="Acknowledge">
+                  <i class="fas fa-user-check"></i>
+                </button>
+                <button class="action-icon" onclick="event.stopPropagation(); incidentManager.resolveIncident('${incident.id}')" title="Resolve">
+                  <i class="fas fa-check"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        `).join('');
 
-    function applyFilters() {
-      showToast('Filters applied successfully', 'success');
-      // In a real app, this would filter the incidents
-      loadIncidents();
-    }
+        this.updatePagination();
+      }
 
-    function clearFilters() {
-      document.getElementById('statusFilter').value = '';
-      document.getElementById('severityFilter').value = '';
-      document.getElementById('serviceFilter').value = '';
-      document.getElementById('dateFilter').value = '24h';
-      showToast('All filters cleared', 'info');
-      loadIncidents();
-    }
+      updateStats() {
+        const openCount = this.incidents.filter(i => i.status === 'open').length;
+        const acknowledgedCount = this.incidents.filter(i => i.status === 'acknowledged').length;
+        const resolvedCount = this.incidents.filter(i => i.status === 'resolved').length;
 
-    // Action functions
-    function viewIncident(id) {
-      showToast(`Viewing details for incident: ${id}`, 'info');
-      // In a real app, this would open a modal with details
-    }
+        document.getElementById('openCount').textContent = openCount;
+        document.getElementById('acknowledgedCount').textContent = acknowledgedCount;
+        document.getElementById('resolvedCount').textContent = resolvedCount;
+      }
 
-    function editIncident(id) {
-      showToast(`Editing incident ${id}`, 'info');
-    }
+      updatePagination() {
+        const total = this.filteredIncidents.length;
+        const start = (this.currentPage - 1) * this.pageSize + 1;
+        const end = Math.min(this.currentPage * this.pageSize, total);
 
-    function acknowledgeIncident(id) {
-      showToast(`Incident ${id} acknowledged`, 'success');
-    }
+        document.getElementById('startRow').textContent = start;
+        document.getElementById('endRow').textContent = end;
+        document.getElementById('totalRows').textContent = total;
 
-    function resolveIncident(id) {
-      showToast(`Incident ${id} resolved`, 'success');
-    }
+        // Update button states
+        document.getElementById('prevPage').disabled = this.currentPage === 1;
+        document.getElementById('firstPage').disabled = this.currentPage === 1;
+        document.getElementById('nextPage').disabled = end >= total;
+        document.getElementById('lastPage').disabled = end >= total;
+      }
 
-    // Helper functions (should be in app.js, but included here for completeness)
-    function getTimeAgo(date) {
-      const now = new Date();
-      const diffMs = now - new Date(date);
-      const diffMins = Math.floor(diffMs / 60000);
-      const diffHours = Math.floor(diffMs / 3600000);
-      const diffDays = Math.floor(diffMs / 86400000);
-      
-      if (diffMins < 60) {
-        return `${diffMins} min${diffMins !== 1 ? 's' : ''} ago`;
-      } else if (diffHours < 24) {
-        return `${diffHours} hour${diffHours !== 1 ? 's' : ''} ago`;
-      } else {
-        return `${diffDays} day${diffDays !== 1 ? 's' : ''} ago`;
+      applyFilters() {
+        const status = document.getElementById('statusFilter').value;
+        const severity = document.getElementById('severityFilter').value;
+        const service = document.getElementById('serviceFilter').value;
+        const search = document.getElementById('searchInput').value.toLowerCase();
+
+        this.filteredIncidents = this.incidents.filter(incident => {
+          if (status && incident.status !== status) return false;
+          if (severity && incident.severity !== severity) return false;
+          if (service && incident.service !== service) return false;
+          if (search && !this.matchesSearch(incident, search)) return false;
+          return true;
+        });
+
+        this.currentPage = 1;
+        this.renderTable();
+        this.showToast('Filters applied successfully', 'success');
+      }
+
+      matchesSearch(incident, search) {
+        return incident.id.toLowerCase().includes(search) ||
+               incident.service.toLowerCase().includes(search) ||
+               incident.description.toLowerCase().includes(search) ||
+               incident.assignedTo.toLowerCase().includes(search);
+      }
+
+      clearFilters() {
+        document.getElementById('statusFilter').value = '';
+        document.getElementById('severityFilter').value = '';
+        document.getElementById('serviceFilter').value = '';
+        document.getElementById('dateFilter').value = '7d';
+        document.getElementById('searchInput').value = '';
+        
+        this.filteredIncidents = [...this.incidents];
+        this.currentPage = 1;
+        this.renderTable();
+        this.showToast('All filters cleared', 'info');
+      }
+
+      viewIncident(id) {
+        const incident = this.incidents.find(i => i.id === id);
+        if (!incident) return;
+
+        const modal = document.getElementById('incidentModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalBody = document.getElementById('modalBody');
+
+        modalTitle.textContent = `Incident ${incident.id}`;
+        modalBody.innerHTML = `
+          <div style="display: grid; gap: 24px;">
+            <div>
+              <h3 style="font-size: 1.25rem; margin-bottom: 16px; color: var(--text-primary);">Details</h3>
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
+                <div>
+                  <label style="font-size: 0.875rem; color: var(--text-muted);">Service</label>
+                  <div style="font-weight: 600; margin-top: 4px;">${incident.service}</div>
+                </div>
+                <div>
+                  <label style="font-size: 0.875rem; color: var(--text-muted);">Severity</label>
+                  <div style="margin-top: 4px;">
+                    <span class="badge severity-badge severity-${incident.severity}">
+                      ${incident.severity}
+                    </span>
+                  </div>
+                </div>
+                <div>
+                  <label style="font-size: 0.875rem; color: var(--text-muted);">Status</label>
+                  <div style="margin-top: 4px;">
+                    <span class="badge status-badge status-${incident.status}">
+                      ${incident.status}
+                    </span>
+                  </div>
+                </div>
+                <div>
+                  <label style="font-size: 0.875rem; color: var(--text-muted);">SLA Priority</label>
+                  <div style="font-weight: 600; margin-top: 4px; color: ${incident.sla === 'P0' ? '#8b5cf6' : incident.sla === 'P1' ? '#ef4444' : incident.sla === 'P2' ? '#f59e0b' : '#3b82f6'}">
+                    ${incident.sla}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <h3 style="font-size: 1.25rem; margin-bottom: 16px; color: var(--text-primary);">Description</h3>
+              <p style="color: var(--text-secondary); line-height: 1.6;">${incident.description}</p>
+            </div>
+
+            <div>
+              <h3 style="font-size: 1.25rem; margin-bottom: 16px; color: var(--text-primary);">Timeline</h3>
+              <div style="display: flex; align-items: center; gap: 16px; color: var(--text-secondary);">
+                <div>
+                  <div style="font-size: 0.875rem;">Created</div>
+                  <div style="font-weight: 600; margin-top: 4px;">${this.formatDate(incident.created)}</div>
+                </div>
+                <i class="fas fa-arrow-right"></i>
+                ${incident.resolved ? `
+                  <div>
+                    <div style="font-size: 0.875rem;">Resolved</div>
+                    <div style="font-weight: 600; margin-top: 4px;">${this.formatDate(incident.resolved)}</div>
+                  </div>
+                ` : `
+                  <div>
+                    <div style="font-size: 0.875rem;">Duration</div>
+                    <div style="font-weight: 600; margin-top: 4px;">${this.getDuration(incident.created)}</div>
+                  </div>
+                `}
+              </div>
+            </div>
+
+            <div>
+              <h3 style="font-size: 1.25rem; margin-bottom: 16px; color: var(--text-primary);">Assigned Team</h3>
+              <div style="display: flex; align-items: center; gap: 12px;">
+                <div style="width: 40px; height: 40px; border-radius: 8px; background: var(--primary-gradient); display: flex; align-items: center; justify-content: center; color: white;">
+                  <i class="fas fa-users"></i>
+                </div>
+                <div>
+                  <div style="font-weight: 600;">${incident.assignedTo}</div>
+                  <div style="font-size: 0.875rem; color: var(--text-muted);">Assigned team</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+
+        modal.style.display = 'block';
+      }
+
+      acknowledgeIncident(id) {
+        const incident = this.incidents.find(i => i.id === id);
+        if (incident && incident.status === 'open') {
+          incident.status = 'acknowledged';
+          incident.updates += 1;
+          this.renderTable();
+          this.updateStats();
+          this.showToast(`Incident ${id} acknowledged`, 'success');
+        }
+      }
+
+      resolveIncident(id) {
+        const incident = this.incidents.find(i => i.id === id);
+        if (incident && (incident.status === 'open' || incident.status === 'acknowledged')) {
+          incident.status = 'resolved';
+          incident.resolved = new Date();
+          incident.updates += 1;
+          this.renderTable();
+          this.updateStats();
+          this.showToast(`Incident ${id} resolved`, 'success');
+        }
+      }
+
+      getStatusIcon(status) {
+        switch(status) {
+          case 'open': return 'exclamation-circle';
+          case 'acknowledged': return 'user-check';
+          case 'resolved': return 'check-circle';
+          default: return 'question-circle';
+        }
+      }
+
+      getTimeAgo(date) {
+        const now = new Date();
+        const diffMs = now - new Date(date);
+        const diffMins = Math.floor(diffMs / 60000);
+        const diffHours = Math.floor(diffMs / 3600000);
+        const diffDays = Math.floor(diffMs / 86400000);
+        
+        if (diffMins < 60) {
+          return `${diffMins}m ago`;
+        } else if (diffHours < 24) {
+          return `${diffHours}h ago`;
+        } else {
+          return `${diffDays}d ago`;
+        }
+      }
+
+      formatDate(date) {
+        return new Date(date).toLocaleString('en-US', {
+          month: 'short',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+      }
+
+      getDuration(startDate) {
+        const start = new Date(startDate);
+        const now = new Date();
+        const diffMs = now - start;
+        
+        const days = Math.floor(diffMs / 86400000);
+        const hours = Math.floor((diffMs % 86400000) / 3600000);
+        const minutes = Math.floor((diffMs % 3600000) / 60000);
+        
+        if (days > 0) return `${days}d ${hours}h`;
+        if (hours > 0) return `${hours}h ${minutes}m`;
+        return `${minutes}m`;
+      }
+
+      showToast(message, type = 'info') {
+        const container = document.getElementById('toastContainer');
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        toast.innerHTML = `
+          <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : type === 'warning' ? 'exclamation-triangle' : 'info-circle'}"></i>
+          <span>${message}</span>
+        `;
+        
+        container.appendChild(toast);
+        
+        setTimeout(() => {
+          toast.style.animation = 'slideInRight 0.3s ease reverse';
+          setTimeout(() => toast.remove(), 300);
+        }, 4000);
+      }
+
+      setupEventListeners() {
+        // Mobile menu toggle
+        document.getElementById('menuToggle').addEventListener('click', () => {
+          document.getElementById('sidebar').classList.toggle('active');
+        });
+
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener('click', (e) => {
+          const sidebar = document.getElementById('sidebar');
+          const menuToggle = document.getElementById('menuToggle');
+          
+          if (window.innerWidth <= 1024 && 
+              !sidebar.contains(e.target) && 
+              e.target !== menuToggle && 
+              !menuToggle.contains(e.target)) {
+            sidebar.classList.remove('active');
+          }
+        });
+
+        // Filter controls
+        document.getElementById('applyFilters').addEventListener('click', () => this.applyFilters());
+        document.getElementById('clearFilters').addEventListener('click', () => this.clearFilters());
+        
+        // Search input
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+          clearTimeout(this.searchTimeout);
+          this.searchTimeout = setTimeout(() => this.applyFilters(), 300);
+        });
+
+        // Quick actions
+        document.getElementById('newIncidentBtn').addEventListener('click', () => {
+          this.showToast('Create new incident form would open here', 'info');
+        });
+
+        document.getElementById('refreshBtn').addEventListener('click', () => {
+          this.loadIncidents();
+        });
+
+        // Pagination
+        document.getElementById('prevPage').addEventListener('click', () => {
+          if (this.currentPage > 1) {
+            this.currentPage--;
+            this.renderTable();
+          }
+        });
+
+        document.getElementById('nextPage').addEventListener('click', () => {
+          const totalPages = Math.ceil(this.filteredIncidents.length / this.pageSize);
+          if (this.currentPage < totalPages) {
+            this.currentPage++;
+            this.renderTable();
+          }
+        });
+
+        // Modal close
+        document.getElementById('closeModal').addEventListener('click', () => {
+          document.getElementById('incidentModal').style.display = 'none';
+        });
+
+        document.getElementById('incidentModal').addEventListener('click', (e) => {
+          if (e.target === document.getElementById('incidentModal')) {
+            document.getElementById('incidentModal').style.display = 'none';
+          }
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape') {
+            document.getElementById('incidentModal').style.display = 'none';
+          }
+          if (e.key === 'r' && e.ctrlKey) {
+            e.preventDefault();
+            this.loadIncidents();
+          }
+        });
       }
     }
 
-    function getStatusIcon(status) {
-      switch(status) {
-        case 'open': return 'fa-exclamation-circle';
-        case 'acknowledged': return 'fa-user-check';
-        case 'resolved': return 'fa-check-circle';
-        default: return 'fa-question-circle';
-      }
-    }
-
-    function showToast(message, type = 'info') {
-      const toast = document.createElement('div');
-      toast.className = `toast toast-${type}`;
-      toast.textContent = message;
-      toast.style.position = 'fixed';
-      toast.style.bottom = '20px';
-      toast.style.right = '20px';
-      toast.style.padding = '12px 20px';
-      toast.style.background = type === 'success' ? '#10b981' : 
-                              type === 'error' ? '#ef4444' : 
-                              type === 'warning' ? '#f59e0b' : '#3b82f6';
-      toast.style.color = 'white';
-      toast.style.borderRadius = '8px';
-      toast.style.zIndex = '10000';
-      toast.style.boxShadow = '0 4px 12px rgba(0,0,0,0.3)';
-      toast.style.animation = 'slideIn 0.3s ease';
-      
-      document.body.appendChild(toast);
-      
-      setTimeout(() => {
-        toast.style.animation = 'slideOut 0.3s ease';
-        setTimeout(() => toast.remove(), 300);
-      }, 3000);
-    }
+    // Initialize the incident manager
+    const incidentManager = new IncidentManager();
   </script>
-
-  <style>
-    /* Toast animations */
-    @keyframes slideIn {
-      from { transform: translateX(100%); opacity: 0; }
-      to { transform: translateX(0); opacity: 1; }
-    }
-    
-    @keyframes slideOut {
-      from { transform: translateX(0); opacity: 1; }
-      to { transform: translateX(100%); opacity: 0; }
-    }
-  </style>
 </body>
 </html>
