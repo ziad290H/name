@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Incident Dashboard</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        h1 { color: #333; }
+        table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+    </style>
+</head>
+<body>
+    <h1>Incident Dashboard</h1>
+    <table id="incidents-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Service</th>
+                <th>Severity</th>
+                <th>Status</th>
+                <th>Created At</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td colspan="5">Loading incidents...</td></tr>
+        </tbody>
+    </table>
+
+    <script>
+        async function loadIncidents() {
+            const tableBody = document.querySelector("#incidents-table tbody");
+            try {
+                const response = await fetch("http://localhost:8001/api/v1/incidents");
+                const incidents = await response.json();
+
+                if (incidents.length === 0) {
+                    tableBody.innerHTML = "<tr><td colspan='5'>No incidents found</td></tr>";
+                    return;
+                }
+
+                tableBody.innerHTML = incidents.map(i => `
+                    <tr>
+                        <td>${i.id}</td>
+                        <td>${i.service}</td>
+                        <td>${i.severity}</td>
+                        <td>${i.status}</td>
+                        <td>${new Date(i.created_at).toLocaleString()}</td>
+                    </tr>
+                `).join("");
+            } catch (err) {
+                tableBody.innerHTML = "<tr><td colspan='5'>Failed to load incidents</td></tr>";
+                console.error(err);
+            }
+        }
+
+        loadIncidents();
+        setInterval(loadIncidents, 5000); // refresh every 5 seconds
+    </script>
+</body>
+</html>
