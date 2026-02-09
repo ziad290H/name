@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Services - Monitoring Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* Page-specific styles */
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 24px;
+      margin-top: 24px;
+    }
+    
+    .service-card {
+      background-color: var(--bg-card);
+      border-radius: var(--radius);
+      padding: 24px;
+      border: 1px solid var(--border-color);
+      transition: var(--transition);
+      position: relative;
+    }
+    
+    .service-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
+    }
+    
+    .service-status {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+    
+    .service-status.healthy { background-color: var(--success); }
+    .service-status.degraded { background-color: var(--warning); }
+    .service-status.down { background-color: var(--danger); }
+    
+    .service-metrics {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      margin: 20px 0;
+    }
+    
+    .metric {
+      text-align: center;
+    }
+    
+    .metric-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+    
+    .metric-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+    
+    .service-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 16px;
+    }
+    
+    .uptime-chart {
+      height: 4px;
+      background-color: var(--bg-accent);
+      border-radius: 2px;
+      margin: 8px 0;
+      overflow: hidden;
+    }
+    
+    .uptime-fill {
+      height: 100%;
+      border-radius: 2px;
+    }
+    
+    .uptime-fill.healthy { background-color: var(--success); }
+    .uptime-fill.degraded { background-color: var(--warning); }
+    .uptime-fill.down { background-color: var(--danger); }
+    
+    .dependency-list {
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border-color);
+    }
+    
+    .dependency-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 0;
+      font-size: 0.875rem;
+    }
+    
+    .dependency-status {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+    
+    .service-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.7);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+  </style>
+</head>
+<body>
+  <!-- Sidebar Navigation -->
+  <div class="sidebar">
+    <a href="index.html" class="logo">
+      <div class="logo-icon">
+        <i class="fas fa-shield-alt"></i>
+      </div>
+      <div class="logo-text">MONITOR</div>
+    </a>
+
+    <nav class="nav">
+      <a href="index.html" class="nav-item">
+        <div class="nav-icon"><i class="fas fa-tachometer-alt"></i></div>
+        <span class="nav-text">Overview</span>
+      </a>
+      <a href="incidents.html" class="nav-item">
+        <div class="nav-icon"><i class="fas fa-exclamation-triangle"></i></div>
+        <span class="nav-text">Incidents</span>
+      </a>
+      <a href="services.html" class="nav-item">
+        <div class="nav-icon"><i class="fas fa-server"></i></div>
+        <span class="nav-text">Services</span>
+      </a>
+      <a href="analytics.html" class="nav-item">
+        <div class="nav-icon"><i class="fas fa-chart-line"></i></div>
+        <span class="nav-text">Analytics</span>
+      </a>
+      <a href="settings.html" class="nav-item">
+        <div class="nav-icon"><i class="fas fa-cog"></i></div>
+        <span class="nav-text">Settings</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="user-profile">
+        <div class="user-avatar">JD</div>
+        <div class="user-info">
+          <h4>John Doe</h4>
+          <p>Admin</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content Area -->
+  <div class="main">
+    <!-- Header -->
+    <div class="header">
+      <h1><i class="fas fa-server" style="color: #60a5fa;"></i> Services Monitoring</h1>
+      <div class="header-actions">
+        <button class="btn btn-secondary" id="refreshServices">
+          <i class="fas fa-sync-alt"></i> Refresh
+        </button>
+        <button class="btn btn-primary" id="addService">
+          <i class="fas fa-plus"></i> Add Service
+        </button>
+      </div>
+    </div>
+
+    <!-- Summary Stats -->
+    <div class="grid grid-4" id="servicesSummary">
+      <div class="stat-card total">
+        <div class="stat-header">
+          <div class="stat-title">Total Services</div>
+          <div class="stat-icon"><i class="fas fa-server"></i></div>
+        </div>
+        <div class="stat-value" id="totalServices">0</div>
+        <div class="stat-change positive">+2 this month</div>
+      </div>
+      
+      <div class="stat-card open">
+        <div class="stat-header">
+          <div class="stat-title">Healthy</div>
+          <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
+        </div>
+        <div class="stat-value" id="healthyServices">0</div>
+        <div class="stat-change positive">98.5% uptime</div>
+      </div>
+      
+      <div class="stat-card acknowledged">
+        <div class="stat-header">
+          <div class="stat-title">Degraded</div>
+          <div class="stat-icon"><i class="fas fa-exclamation-triangle"></i></div>
+        </div>
+        <div class="stat-value" id="degradedServices">0</div>
+        <div class="stat-change negative">Needs attention</div>
+      </div>
+      
+      <div class="stat-card resolved">
+        <div class="stat-header">
+          <div class="stat-title">Down</div>
+          <div class="stat-icon"><i class="fas fa-times-circle"></i></div>
+        </div>
+        <div class="stat-value" id="downServices">0</div>
+        <div class="stat-change negative">Critical</div>
+      </div>
+    </div>
+
+    <!-- Services Grid -->
+    <div class="services-grid" id="servicesGrid">
+      <!-- Will be populated by JavaScript -->
+    </div>
+  </div>
+
+  <script src="js/app.js"></script>
+  <script>
+    // Page-specific JavaScript
+    document.addEventListener('DOMContentLoaded', () => {
+      loadServices();
+      setupEventListeners();
+    });
+
+    async function loadServices() {
+      try {
+        // Try to fetch from API
+        const response = await fetch("http://localhost:8001/api/v1/services");
+        const services = await response.json();
+        renderServices(services);
+      } catch (err) {
+        // Fallback to sample data
+        console.warn("API unavailable, using sample data:", err);
+        renderServices(sampleServices);
+      }
+    }
+
+    function renderServices(services) {
+      const grid = document.getElementById('servicesGrid');
+      
+      // Update summary
+      const total = services.length;
+      const healthy = services.filter(s => s.status === 'healthy').length;
+      const degraded = services.filter(s => s.status === 'degraded').length;
+      const down = services.filter(s => s.status === 'down').length;
+      
+      document.getElementById('totalServices').textContent = total;
+      document.getElementById('healthyServices').textContent = healthy;
+      document.getElementById('degradedServices').textContent = degraded;
+      document.getElementById('downServices').textContent = down;
+      
+      if (!services.length) {
+        grid.innerHTML = `
+          <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px;">
+            <div style="font-size: 4rem; color: var(--text-muted); margin-bottom: 20px;">
+              <i class="fas fa-server"></i>
+            </div>
+            <h3>No Services Configured</h3>
+            <p style="color: var(--text-muted); max-width: 400px; margin: 10px auto;">
+              Add your first service to start monitoring.
+            </p>
+            <button class="btn btn-primary" style="margin-top: 20px;">
+              <i class="fas fa-plus"></i> Add First Service
+            </button>
+          </div>
+        `;
+        return;
+      }
+
+      grid.innerHTML = services.map(service => `
+        <div class="service-card">
+          <div class="service-status ${service.status}"></div>
+          
+          <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+            <div style="width: 48px; height: 48px; border-radius: 10px; background: linear-gradient(135deg, #3b82f6, #8b5cf6); display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">
+              <i class="fas fa-server"></i>
+            </div>
+            <div>
+              <h3 style="margin: 0;">${service.name}</h3>
+              <p style="margin: 4px 0 0; color: var(--text-muted); font-size: 0.875rem;">${service.id}</p>
+            </div>
+          </div>
+          
+          <div class="service-metrics">
+            <div class="metric">
+              <div class="metric-value">${service.uptime}</div>
+              <div class="metric-label">Uptime</div>
+            </div>
+            <div class="metric">
+              <div class="metric-value">${service.latency}</div>
+              <div class="metric-label">Latency</div>
+            </div>
+          </div>
+          
+          <div>
+            <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-muted);">
+              <span>Uptime Trend</span>
+              <span>Last 30 days</span>
+            </div>
+            <div class="uptime-chart">
+              <div class="uptime-fill ${service.status}" style="width: ${getUptimeWidth(service.uptime)}"></div>
+            </div>
+          </div>
+          
+          <div class="dependency-list">
+            <div style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 8px;">Dependencies</div>
+            <div class="dependency-item">
+              <div class="dependency-status healthy"></div>
+              <span>API Gateway</span>
+            </div>
+            <div class="dependency-item">
+              <div class="dependency-status healthy"></div>
+              <span>Database</span>
+            </div>
+            <div class="dependency-item">
+              <div class="dependency-status ${service.status === 'degraded' ? 'degraded' : 'healthy'}"></div>
+              <span>Cache Layer</span>
+            </div>
+          </div>
+          
+          <div class="service-actions">
+            <button class="btn btn-secondary" style="flex: 1;" onclick="viewService('${service.id}')">
+              <i class="fas fa-chart-line"></i> Metrics
+            </button>
+            <button class="btn btn-secondary" style="flex: 1;" onclick="editService('${service.id}')">
+              <i class="fas fa-cog"></i> Configure
+            </button>
+          </div>
+          
+          <div style="margin-top: 12px; font-size: 0.75rem; color: var(--text-muted);">
+            <i class="far fa-clock"></i> Last incident: ${service.lastIncident}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function getUptimeWidth(uptimeStr) {
+      // Convert "99.95%" to width percentage
+      const uptime = parseFloat(uptimeStr);
+      return `${uptime}%`;
+    }
+
+    function setupEventListeners() {
+      document.getElementById('refreshServices').addEventListener('click', loadServices);
+      document.getElementById('addService').addEventListener('click', () => {
+        showToast('Add service form would open here', 'info');
+      });
+    }
+
+    function viewService(id) {
+      showToast(`Viewing metrics for service ${id}`, 'info');
+    }
+
+    function editService(id) {
+      showToast(`Editing service ${id}`, 'info');
+    }
+  </script>
+</body>
+</html>

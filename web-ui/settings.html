@@ -1,0 +1,1101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Settings - Monitoring Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* Centered Layout */
+    .main {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 30px;
+    }
+
+    /* Page Header */
+    .page-header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .page-header h1 {
+      font-size: 2.2rem;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+    }
+
+    .page-subtitle {
+      color: var(--text-muted);
+      font-size: 1.1rem;
+      max-width: 600px;
+      margin: 0 auto;
+      line-height: 1.5;
+    }
+
+    /* Centered Settings Container */
+    .settings-container {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 40px;
+      max-width: 1300px;
+      margin: 0 auto;
+    }
+
+    @media (max-width: 1024px) {
+      .settings-container {
+        grid-template-columns: 1fr;
+        gap: 30px;
+      }
+    }
+
+    /* Settings Sidebar - Enhanced */
+    .settings-sidebar {
+      background: var(--bg-card);
+      border-radius: 16px;
+      border: 1px solid var(--border-color);
+      overflow: hidden;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+      height: fit-content;
+      position: sticky;
+      top: 30px;
+    }
+
+    .sidebar-header {
+      padding: 24px;
+      background: linear-gradient(135deg, var(--primary), #8b5cf6);
+      color: white;
+    }
+
+    .sidebar-header h3 {
+      font-size: 1.3rem;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .settings-nav {
+      padding: 16px 0;
+    }
+
+    .settings-nav-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 16px 24px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      border-left: 4px solid transparent;
+      transition: all 0.3s ease;
+      margin: 4px 8px;
+      border-radius: 10px;
+    }
+
+    .settings-nav-item:hover {
+      background: var(--bg-accent);
+      color: var(--text-primary);
+      transform: translateX(5px);
+    }
+
+    .settings-nav-item.active {
+      background: linear-gradient(90deg, rgba(59, 130, 246, 0.15), rgba(139, 92, 246, 0.08));
+      color: var(--primary);
+      border-left-color: var(--primary);
+      font-weight: 600;
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.1);
+    }
+
+    .nav-icon {
+      width: 22px;
+      text-align: center;
+      font-size: 1.1rem;
+    }
+
+    /* Settings Content - Enhanced */
+    .settings-content {
+      background: var(--bg-card);
+      border-radius: 16px;
+      padding: 40px;
+      border: 1px solid var(--border-color);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Section Headers */
+    .section-header {
+      margin-bottom: 35px;
+      padding-bottom: 20px;
+      border-bottom: 2px solid var(--border-color);
+    }
+
+    .section-header h2 {
+      font-size: 1.6rem;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: var(--text-primary);
+    }
+
+    .section-header p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+
+    /* Form Groups - Enhanced */
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 25px;
+      margin-bottom: 35px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .form-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+      font-weight: 600;
+      color: var(--text-primary);
+      font-size: 0.95rem;
+    }
+
+    .form-label i {
+      color: var(--primary);
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 14px 18px;
+      background: var(--bg-accent);
+      border: 2px solid var(--border-color);
+      border-radius: 10px;
+      color: var(--text-primary);
+      font-size: 0.95rem;
+      transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
+      background: var(--bg-secondary);
+    }
+
+    /* Toggle Switches - Enhanced */
+    .toggle-section {
+      background: var(--bg-accent);
+      border-radius: 12px;
+      padding: 25px;
+      margin-bottom: 30px;
+      border: 1px solid var(--border-color);
+    }
+
+    .toggle-section h3 {
+      font-size: 1.2rem;
+      margin-bottom: 20px;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .toggle-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 18px 0;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .toggle-item:last-child {
+      border-bottom: none;
+    }
+
+    .toggle-info {
+      flex: 1;
+    }
+
+    .toggle-info h4 {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 5px;
+      color: var(--text-primary);
+    }
+
+    .toggle-info p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    /* Enhanced Toggle Switch */
+    .toggle-switch {
+      position: relative;
+      width: 62px;
+      height: 34px;
+      margin-left: 20px;
+    }
+
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .toggle-slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(135deg, #64748b, #94a3b8);
+      transition: all 0.4s ease;
+      border-radius: 34px;
+    }
+
+    .toggle-slider:before {
+      position: absolute;
+      content: "";
+      height: 26px;
+      width: 26px;
+      left: 4px;
+      bottom: 4px;
+      background: white;
+      transition: all 0.4s ease;
+      border-radius: 50%;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    input:checked + .toggle-slider {
+      background: linear-gradient(135deg, var(--primary), #8b5cf6);
+    }
+
+    input:checked + .toggle-slider:before {
+      transform: translateX(28px);
+    }
+
+    /* Integrations Grid - Enhanced */
+    .integrations-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 20px;
+      margin-top: 25px;
+    }
+
+    .integration-card {
+      background: var(--bg-accent);
+      border-radius: 12px;
+      padding: 25px;
+      border: 2px solid var(--border-color);
+      transition: all 0.3s ease;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .integration-card:hover {
+      transform: translateY(-5px);
+      border-color: var(--primary);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    }
+
+    .integration-card.connected {
+      border-color: var(--success);
+    }
+
+    .integration-card.disconnected {
+      border-color: var(--danger);
+    }
+
+    .integration-icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--primary), #8b5cf6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+      margin: 0 auto 18px;
+      color: white;
+    }
+
+    .integration-card.connected .integration-icon {
+      background: linear-gradient(135deg, var(--success), #10b981);
+    }
+
+    .integration-card.disconnected .integration-icon {
+      background: linear-gradient(135deg, var(--danger), #ef4444);
+    }
+
+    .integration-name {
+      font-weight: 600;
+      margin-bottom: 10px;
+      font-size: 1rem;
+      color: var(--text-primary);
+    }
+
+    .integration-status {
+      font-size: 0.8rem;
+      padding: 6px 14px;
+      border-radius: 20px;
+      display: inline-block;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+
+    .status-connected {
+      background: rgba(16, 185, 129, 0.2);
+      color: var(--success);
+    }
+
+    .status-disconnected {
+      background: rgba(239, 68, 68, 0.2);
+      color: var(--danger);
+    }
+
+    /* Team Members - Enhanced */
+    .team-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 20px;
+      margin-top: 25px;
+    }
+
+    .team-card {
+      background: var(--bg-accent);
+      border-radius: 12px;
+      padding: 20px;
+      border: 2px solid var(--border-color);
+      transition: all 0.3s ease;
+    }
+
+    .team-card:hover {
+      border-color: var(--primary);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .team-header {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 15px;
+    }
+
+    .member-avatar {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), #8b5cf6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 1.2rem;
+      color: white;
+    }
+
+    .member-info {
+      flex: 1;
+    }
+
+    .member-name {
+      font-weight: 600;
+      font-size: 1rem;
+      color: var(--text-primary);
+    }
+
+    .member-role {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-top: 3px;
+    }
+
+    .member-badge {
+      display: inline-block;
+      padding: 4px 10px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      border-radius: 12px;
+      margin-top: 5px;
+    }
+
+    .badge-admin {
+      background: rgba(59, 130, 246, 0.2);
+      color: var(--primary);
+    }
+
+    .badge-developer {
+      background: rgba(245, 158, 11, 0.2);
+      color: var(--warning);
+    }
+
+    .badge-ops {
+      background: rgba(16, 185, 129, 0.2);
+      color: var(--success);
+    }
+
+    .team-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+      padding-top: 15px;
+      border-top: 1px solid var(--border-color);
+    }
+
+    .action-btn {
+      flex: 1;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      background: var(--bg-card);
+      color: var(--text-primary);
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .action-btn:hover {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+
+    /* API Section - Enhanced */
+    .api-card {
+      background: var(--bg-accent);
+      border-radius: 12px;
+      padding: 25px;
+      border: 2px solid var(--primary);
+      margin-top: 20px;
+    }
+
+    .api-key-container {
+      background: var(--bg-secondary);
+      border-radius: 10px;
+      padding: 20px;
+      margin: 20px 0;
+      position: relative;
+    }
+
+    .api-key {
+      font-family: 'SF Mono', 'Roboto Mono', monospace;
+      font-size: 0.9rem;
+      color: var(--text-primary);
+      word-break: break-all;
+      padding: 15px;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 8px;
+      border-left: 4px solid var(--success);
+    }
+
+    .copy-btn {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .copy-btn:hover {
+      background: #2563eb;
+      transform: translateY(-2px);
+    }
+
+    .api-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 25px;
+      flex-wrap: wrap;
+    }
+
+    /* Danger Zone - Enhanced */
+    .danger-zone {
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(220, 38, 38, 0.05));
+      border: 2px solid var(--danger);
+      border-radius: 16px;
+      padding: 35px;
+      margin-top: 40px;
+    }
+
+    .danger-header {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .danger-header h3 {
+      color: var(--danger);
+      font-size: 1.4rem;
+      margin: 0;
+    }
+
+    .danger-item {
+      margin-bottom: 25px;
+      padding-bottom: 25px;
+      border-bottom: 1px solid rgba(239, 68, 68, 0.3);
+    }
+
+    .danger-item:last-child {
+      margin-bottom: 0;
+      padding-bottom: 0;
+      border-bottom: none;
+    }
+
+    .danger-item h4 {
+      font-size: 1.1rem;
+      margin-bottom: 10px;
+      color: var(--text-primary);
+    }
+
+    .danger-item p {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin-bottom: 15px;
+      line-height: 1.5;
+    }
+
+    /* Action Buttons */
+    .action-buttons {
+      display: flex;
+      gap: 15px;
+      justify-content: flex-end;
+      margin-top: 40px;
+      padding-top: 30px;
+      border-top: 2px solid var(--border-color);
+    }
+
+    .btn {
+      padding: 14px 28px;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), #8b5cf6);
+      color: white;
+      box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+    }
+
+    .btn-secondary {
+      background: var(--bg-accent);
+      color: var(--text-primary);
+      border: 2px solid var(--border-color);
+    }
+
+    .btn-secondary:hover {
+      background: var(--border-color);
+      transform: translateY(-2px);
+    }
+
+    .btn-danger {
+      background: linear-gradient(135deg, var(--danger), #dc2626);
+      color: white;
+      box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+    }
+
+    .btn-danger:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+    }
+
+    .btn-warning {
+      background: linear-gradient(135deg, var(--warning), #d97706);
+      color: white;
+      box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
+    }
+
+    .btn-warning:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(245, 158, 11, 0.4);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .main {
+        padding: 20px;
+      }
+      
+      .settings-content {
+        padding: 25px;
+      }
+      
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .team-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .integrations-grid {
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      }
+      
+      .api-actions {
+        flex-direction: column;
+      }
+      
+      .btn {
+        width: 100%;
+        justify-content: center;
+      }
+      
+      .action-buttons {
+        flex-direction: column;
+      }
+    }
+
+    /* Animation for sections */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .settings-section {
+      animation: fadeInUp 0.5s ease-out;
+    }
+
+    /* Smooth transitions */
+    .settings-nav-item,
+    .toggle-item,
+    .integration-card,
+    .team-card,
+    .btn {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Custom scrollbar */
+    .settings-content::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .settings-content::-webkit-scrollbar-track {
+      background: var(--bg-accent);
+      border-radius: 4px;
+    }
+
+    .settings-content::-webkit-scrollbar-thumb {
+      background: var(--primary);
+      border-radius: 4px;
+    }
+
+    .settings-content::-webkit-scrollbar-thumb:hover {
+      background: #2563eb;
+    }
+  </style>
+</head>
+<body>
+  <!-- Sidebar Navigation -->
+  <div class="sidebar">
+    <a href="index.html" class="logo">
+      <div class="logo-icon">
+        <i class="fas fa-shield-alt"></i>
+      </div>
+      <div class="logo-text">MONITOR</div>
+    </a>
+
+    <nav class="nav">
+      <a href="index.html" class="nav-item">
+        <div class="nav-icon"><i class="fas fa-tachometer-alt"></i></div>
+        <span class="nav-text">Overview</span>
+      </a>
+      <a href="incidents.html" class="nav-item">
+        <div class="nav-icon"><i class="fas fa-exclamation-triangle"></i></div>
+        <span class="nav-text">Incidents</span>
+      </a>
+      <a href="services.html" class="nav-item">
+        <div class="nav-icon"><i class="fas fa-server"></i></div>
+        <span class="nav-text">Services</span>
+      </a>
+      <a href="analytics.html" class="nav-item">
+        <div class="nav-icon"><i class="fas fa-chart-line"></i></div>
+        <span class="nav-text">Analytics</span>
+      </a>
+      <a href="settings.html" class="nav-item active">
+        <div class="nav-icon"><i class="fas fa-cog"></i></div>
+        <span class="nav-text">Settings</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="user-profile">
+        <div class="user-avatar">JD</div>
+        <div class="user-info">
+          <h4>John Doe</h4>
+          <p>Administrator</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content Area -->
+  <div class="main">
+    <!-- Page Header -->
+    <div class="page-header">
+      <h1>
+        <i class="fas fa-cog" style="background: linear-gradient(135deg, #94a3b8, #64748b); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"></i>
+        Settings & Configuration
+      </h1>
+      <p class="page-subtitle">Configure your monitoring dashboard, manage integrations, and customize preferences</p>
+    </div>
+
+    <!-- Settings Container -->
+    <div class="settings-container">
+      <!-- Settings Sidebar -->
+      <div class="settings-sidebar">
+        <div class="sidebar-header">
+          <h3><i class="fas fa-sliders-h"></i> Configuration</h3>
+        </div>
+        <nav class="settings-nav">
+          <a href="#general" class="settings-nav-item active" data-section="general">
+            <i class="fas fa-sliders-h nav-icon"></i>
+            <span>General</span>
+          </a>
+          <a href="#notifications" class="settings-nav-item" data-section="notifications">
+            <i class="fas fa-bell nav-icon"></i>
+            <span>Notifications</span>
+          </a>
+          <a href="#integrations" class="settings-nav-item" data-section="integrations">
+            <i class="fas fa-plug nav-icon"></i>
+            <span>Integrations</span>
+          </a>
+          <a href="#team" class="settings-nav-item" data-section="team">
+            <i class="fas fa-users nav-icon"></i>
+            <span>Team</span>
+          </a>
+          <a href="#api" class="settings-nav-item" data-section="api">
+            <i class="fas fa-code nav-icon"></i>
+            <span>API</span>
+          </a>
+          <a href="#danger" class="settings-nav-item" data-section="danger">
+            <i class="fas fa-exclamation-triangle nav-icon"></i>
+            <span>Danger Zone</span>
+          </a>
+        </nav>
+      </div>
+
+      <!-- Settings Content -->
+      <div class="settings-content" id="settingsContent">
+        <!-- General Settings -->
+        <div id="generalSection" class="settings-section">
+          <div class="section-header">
+            <h2><i class="fas fa-sliders-h" style="color: var(--primary);"></i> General Settings</h2>
+            <p>Configure basic dashboard settings and preferences</p>
+          </div>
+
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">
+                <i class="fas fa-chart-line"></i>
+                Dashboard Name
+              </label>
+              <input type="text" class="form-control" value="Production Monitoring" id="dashboardName" placeholder="Enter dashboard name">
+              <small style="color: var(--text-muted); margin-top: 8px; font-size: 0.85rem;">This name appears in the header</small>
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label">
+                <i class="fas fa-globe"></i>
+                Timezone
+              </label>
+              <select class="form-control" id="timezone">
+                <option value="UTC" selected>UTC (Coordinated Universal Time)</option>
+                <option value="EST">EST (Eastern Standard Time)</option>
+                <option value="PST">PST (Pacific Standard Time)</option>
+                <option value="CET">CET (Central European Time)</option>
+                <option value="GMT">GMT (Greenwich Mean Time)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">
+                <i class="fas fa-sync-alt"></i>
+                Auto-refresh Interval
+              </label>
+              <select class="form-control" id="refreshInterval">
+                <option value="5">5 seconds</option>
+                <option value="10" selected>10 seconds</option>
+                <option value="30">30 seconds</option>
+                <option value="60">1 minute</option>
+                <option value="300">5 minutes</option>
+                <option value="0">Manual refresh only</option>
+              </select>
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label">
+                <i class="fas fa-language"></i>
+                Language
+              </label>
+              <select class="form-control" id="language">
+                <option value="en" selected>English</option>
+                <option value="es">Español</option>
+                <option value="fr">Français</option>
+                <option value="de">Deutsch</option>
+                <option value="ja">日本語</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="toggle-section">
+            <h3><i class="fas fa-palette" style="color: var(--primary);"></i> Display Preferences</h3>
+            
+            <div class="toggle-item">
+              <div class="toggle-info">
+                <h4>Dark Mode</h4>
+                <p>Use dark theme for better viewing in low-light conditions</p>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" id="darkModeToggle" checked>
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+            
+            <div class="toggle-item">
+              <div class="toggle-info">
+                <h4>Compact View</h4>
+                <p>Use compact layout for tables and lists to show more data</p>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" id="compactViewToggle">
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+            
+            <div class="toggle-item">
+              <div class="toggle-info">
+                <h4>Show Charts</h4>
+                <p>Display interactive charts in dashboard overview</p>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" id="showChartsToggle" checked>
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+            
+            <div class="toggle-item">
+              <div class="toggle-info">
+                <h4>Animations</h4>
+                <p>Enable smooth animations and transitions</p>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" id="animationsToggle" checked>
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+            
+            <div class="toggle-item">
+              <div class="toggle-info">
+                <h4>Sound Notifications</h4>
+                <p>Play sounds for new incidents and alerts</p>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" id="soundToggle">
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Notifications Settings (Hidden by default) -->
+        <div id="notificationsSection" class="settings-section" style="display: none;">
+          <div class="section-header">
+            <h2><i class="fas fa-bell" style="color: var(--warning);"></i> Notification Settings</h2>
+            <p>Configure how and when you receive alerts and notifications</p>
+          </div>
+          
+          <!-- Content would be here -->
+        </div>
+
+        <!-- Integrations Settings (Hidden by default) -->
+        <div id="integrationsSection" class="settings-section" style="display: none;">
+          <div class="section-header">
+            <h2><i class="fas fa-plug" style="color: var(--success);"></i> Integrations</h2>
+            <p>Connect your monitoring dashboard with other services and tools</p>
+          </div>
+          
+          <!-- Content would be here -->
+        </div>
+
+        <!-- Team Settings (Hidden by default) -->
+        <div id="teamSection" class="settings-section" style="display: none;">
+          <div class="section-header">
+            <h2><i class="fas fa-users" style="color: var(--primary);"></i> Team Management</h2>
+            <p>Manage team members, roles, and permissions</p>
+          </div>
+          
+          <!-- Content would be here -->
+        </div>
+
+        <!-- API Settings (Hidden by default) -->
+        <div id="apiSection" class="settings-section" style="display: none;">
+          <div class="section-header">
+            <h2><i class="fas fa-code" style="color: var(--warning);"></i> API Configuration</h2>
+            <p>Manage API keys and access for integrations and automation</p>
+          </div>
+          
+          <!-- Content would be here -->
+        </div>
+
+        <!-- Danger Zone (Hidden by default) -->
+        <div id="dangerSection" class="settings-section" style="display: none;">
+          <div class="danger-zone">
+            <div class="danger-header">
+              <i class="fas fa-exclamation-triangle" style="font-size: 1.8rem; color: var(--danger);"></i>
+              <h3>Danger Zone</h3>
+            </div>
+            <p style="color: var(--text-muted); margin-bottom: 25px; font-size: 0.95rem;">
+              These actions are irreversible and can permanently delete data. Please proceed with extreme caution.
+            </p>
+            
+            <div class="danger-item">
+              <h4>Export All Data</h4>
+              <p>Download a complete backup of all incidents, services, configuration, and logs in JSON format.</p>
+              <button class="btn btn-secondary">
+                <i class="fas fa-download"></i> Export Data Backup
+              </button>
+            </div>
+            
+            <div class="danger-item">
+              <h4>Reset Dashboard</h4>
+              <p>Clear all incidents, reset counters, and restore default configuration settings.</p>
+              <button class="btn btn-warning" id="resetDashboard">
+                <i class="fas fa-redo"></i> Reset Dashboard
+              </button>
+            </div>
+            
+            <div class="danger-item">
+              <h4>Delete Account</h4>
+              <p>Permanently delete your account and all associated data. This action cannot be undone.</p>
+              <button class="btn btn-danger" id="deleteAccount">
+                <i class="fas fa-trash"></i> Delete Account
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+          <button class="btn btn-secondary" id="discardChanges">
+            <i class="fas fa-times"></i> Discard Changes
+          </button>
+          <button class="btn btn-primary" id="saveSettings">
+            <i class="fas fa-save"></i> Save All Changes
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Confirmation Modal -->
+  <div class="modal" id="confirmationModal" style="display: none;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 style="margin: 0; color: var(--danger);">Confirm Action</h2>
+      </div>
+      <div class="modal-body">
+        <p id="modalMessage" style="color: var(--text-primary); font-size: 1rem; line-height: 1.6;">
+          Are you sure you want to perform this action?
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="modalCancel">
+          <i class="fas fa-times"></i> Cancel
+        </button>
+        <button class="btn btn-danger" id="modalConfirm">
+          <i class="fas fa-check"></i> Confirm
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Complete JavaScript for Settings Page
+    document.addEventListener('DOMContentLoaded', () => {
+      initializePage();
+      setupEventListeners();
+      setupSettingsNavigation();
+      initializeDarkMode();
+      loadSavedSettings();
+    });
+
+    function initializePage() {
+      // Set active nav item
+      const navItems = document.querySelectorAll('.nav-item');
+      navItems.forEach(item => item.classList.remove('active'));
+      document.querySelector('a[href="settings.html"]').classList.add('active');
+    }
+
+    function loadSavedSettings() {
+      // Load saved settings from localStorage
+      const savedName = localStorage.getItem('dashboardName');
+      const savedTimezone = localStorage.getItem('timezone');
+      const savedRefresh = localStorage.getItem('refreshInterval');
+      const savedLanguage = localStorage.getItem('language');
+      const savedDarkMode = localStorage.getItem('darkMode');
+      const savedCompact = localStorage.getItem('compactView');
+      const savedCharts = localStorage.getItem('showCharts');
+      const savedAnimations = localStorage.getItem('animations');
+      const savedSound = localStorage.getItem('sound');
+
+      // Apply saved settings to form
+      if (savedName) document.getElementById('dashboardName').value = savedName;
+      if (savedTimezone) document.getElementById('timezone').value = savedTimezone;
+      if (savedRefresh) document.getElementById('refreshInterval').value = savedRefresh;
+      if (savedLanguage) document.getElementById('language').value = savedLanguage;
+      
+      // Apply toggle settings
+      document.getElementById('darkModeToggle').checked = savedDarkMode === 'true';
+      document.getElementById('compactViewToggle').checked = savedCompact === 'true';
+      document.getElementById('show

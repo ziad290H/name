@@ -1,33 +1,19 @@
 version: '3.8'
 
 services:
-  web-ui:
-    build: ./services/web-ui
-    ports:
-      - "8080:80"
-    networks:
-      - incident-platform
-    depends_on:
-      - alert-ingestion
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost"]
-      interval: 30s
-      timeout: 5s
-      retries: 3
-
   alert-ingestion:
-    build: ./services/alert-ingestion
+    build: ./alert-ingestion
     ports:
       - "8001:8001"
-    networks:
-      - incident-platform
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
       interval: 10s
       timeout: 5s
       retries: 5
-    command: uvicorn main:app --host 0.0.0.0 --port 8001
 
-networks:
-  incident-platform:
-    driver: bridge
+  web-ui:
+    build: ./web-ui
+    ports:
+      - "8080:80"
+    depends_on:
+      - alert-ingestion
